@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>폐병동 13호</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="fog" aria-hidden="true"></div>
+    <div id="terrorFlash" class="terror-flash" aria-hidden="true"></div>
+
+    <main class="app-shell">
+      <section class="topbar" aria-label="게임 상태">
+        <div>
+          <p class="eyebrow">Horror Escape</p>
+          <h1>폐병동 13호</h1>
+        </div>
+        <div class="status-grid">
+          <div class="status-card">
+            <span>난이도</span>
+            <strong id="statusDifficulty">-</strong>
+          </div>
+          <div class="status-card">
+            <span>남은 시간</span>
+            <strong id="timer">--:--</strong>
+          </div>
+          <div class="status-card">
+            <span>진행</span>
+            <strong id="progressText">0/4</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="setupView" class="setup-view" aria-label="게임 시작 설정">
+        <div class="setup-copy">
+          <p class="eyebrow">Case 13</p>
+          <h2>문이 닫히기 전에 병동의 기록을 따라 탈출하세요.</h2>
+          <p>방마다 숨은 단서와 잠금 장치가 있습니다. 지옥 난이도에서는 단서가 대학 수준의 암호, 선형대수, 열역학, 추상대수 지식으로 바뀝니다.</p>
+        </div>
+
+        <div class="control-panel">
+          <label for="playerName">탐색자 이름</label>
+          <input id="playerName" type="text" maxlength="18" placeholder="예: 민준">
+
+          <fieldset>
+            <legend>난이도 선택</legend>
+            <div class="difficulty-list" id="difficultyList"></div>
+          </fieldset>
+
+          <div class="button-row">
+            <button id="startBtn" class="primary-btn" type="button">새 게임 시작</button>
+            <button id="resumeBtn" class="ghost-btn" type="button">저장된 게임 이어하기</button>
+            <button id="soundBtn" class="ghost-btn" type="button">공포음 켜기</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="gameView" class="game-view hidden" aria-label="방탈출 게임">
+        <aside class="side-panel" aria-label="방 목록과 기록">
+          <div class="room-list" id="roomList"></div>
+          <div class="inventory-box">
+            <div class="panel-heading">
+              <h2>소지품</h2>
+              <button id="clearSaveBtn" class="icon-btn" type="button" title="현재 저장 삭제" aria-label="현재 저장 삭제">
+                <span aria-hidden="true">x</span>
+              </button>
+            </div>
+            <div id="inventory" class="inventory"></div>
+          </div>
+          <div class="journal-box">
+            <div class="panel-heading">
+              <h2>기록</h2>
+              <button id="hintBtn" class="small-btn" type="button">힌트</button>
+            </div>
+            <ul id="journal" class="journal"></ul>
+          </div>
+        </aside>
+
+        <section class="room-stage" aria-live="polite">
+          <div class="room-header">
+            <div>
+              <p id="roomNumber" class="eyebrow">Room</p>
+              <h2 id="roomTitle"></h2>
+            </div>
+            <p id="roomMood" class="room-mood"></p>
+          </div>
+
+          <div class="scene-frame">
+            <div id="sceneArt" class="scene-art" aria-label="현재 방 장면"></div>
+            <div class="vignette" aria-hidden="true"></div>
+            <div id="hotspots" class="hotspots"></div>
+          </div>
+
+          <div class="interaction-grid">
+            <section class="puzzle-panel">
+              <div class="panel-heading">
+                <h3 id="puzzleTitle"></h3>
+                <span id="puzzleState" class="pill">잠김</span>
+              </div>
+              <p id="puzzlePrompt"></p>
+              <div class="answer-row">
+                <input id="answerInput" type="text" autocomplete="off" placeholder="답 입력">
+                <button id="submitAnswerBtn" class="primary-btn" type="button">확인</button>
+              </div>
+              <p id="feedback" class="feedback" role="status"></p>
+            </section>
+
+            <section class="clue-panel">
+              <div class="panel-heading">
+                <h3>발견한 단서</h3>
+                <button id="resetRoomBtn" class="small-btn" type="button">방 다시 보기</button>
+              </div>
+              <div id="clues" class="clues"></div>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <section id="resultsView" class="results-view hidden" aria-label="결과 저장">
+        <div class="result-card">
+          <p class="eyebrow">Escape Result</p>
+          <h2 id="resultTitle"></h2>
+          <p id="resultSummary"></p>
+          <div id="resultStats" class="result-stats"></div>
+          <div class="button-row">
+            <button id="playAgainBtn" class="primary-btn" type="button">다시 도전</button>
+            <button id="showRanksBtn" class="ghost-btn" type="button">기록 보기</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="leaderboard" aria-label="저장된 결과">
+        <div class="panel-heading">
+          <h2>저장된 결과</h2>
+          <button id="clearResultsBtn" class="small-btn" type="button">기록 삭제</button>
+        </div>
+        <div id="leaderboard"></div>
+      </section>
+
+      <footer class="site-footer">
+        <span>폐병동 13호</span>
+        <a href="https://github.com/winjjws-hash" target="_blank" rel="noreferrer">GitHub winjjws-hash</a>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
