@@ -87,14 +87,43 @@ const rooms = [
     ]
   },
   {
+    id: "backrooms",
+    title: "노란 무한 복도",
+    mood: "젖은 카펫 냄새와 형광등의 낮은 윙윙거림이 방향감각을 천천히 지웁니다.",
+    puzzleTitle: "레벨 13 출구 표식",
+    puzzlePrompt: "복도는 네 글자 출구 신호를 요구합니다. 같은 벽지가 반복되지만, 표식은 조금씩 달라집니다.",
+    answer: "EXIT",
+    reward: "노란 출입카드",
+    requires: ["퓨즈"],
+    hint: "깜빡이는 표지판과 카펫 얼룩, 출구 낙서를 한 단어로 합치세요.",
+    hell: {
+      puzzleTitle: "비유클리드 복도",
+      puzzlePrompt: "벽에는 '한쪽 면과 한쪽 경계만 가진 띠'를 영어로 쓰라고 표시됩니다.",
+      answer: "MOBIUS",
+      hint: "한 번 비튼 띠는 안과 밖의 구분이 사라집니다.",
+      hotspots: [
+        { id: "strip", label: "비틀린 안내도", x: 27, y: 38, clue: "안내도는 한 번 비틀려 붙은 띠처럼 이어져 있습니다. 시작점이 안쪽과 바깥쪽을 동시에 밟습니다." },
+        { id: "one-side", label: "벽지 공식", x: 55, y: 24, clue: "벽지에는 'one side, one boundary'라는 문장이 노란색으로 반복됩니다." },
+        { id: "humming-door", label: "윙윙대는 문", x: 77, y: 53, clue: "문 아래에는 MOB_US라는 글자가 번쩍입니다. 빠진 글자는 하나입니다." },
+        { id: "shadow-turn", label: "돌아선 그림자", x: 48, y: 71, clue: "그림자는 같은 복도를 한 바퀴 돌고도 반대편에 서 있습니다." }
+      ]
+    },
+    hotspots: [
+      { id: "exit-sign", label: "깜빡이는 표지판", x: 66, y: 22, clue: "표지판은 E와 X를 번갈아 보여줍니다. 불이 꺼질 때마다 복도가 한 칸 늘어납니다." },
+      { id: "carpet", label: "젖은 카펫", x: 31, y: 73, clue: "카펫 얼룩은 위에서 보면 I처럼 길게 이어져 있습니다." },
+      { id: "wall-note", label: "벽지 낙서", x: 45, y: 43, clue: "누군가 벽지 위에 'T만 찾으면 나간다'라고 긁어두었습니다." },
+      { id: "turn", label: "돌아가는 모서리", x: 82, y: 62, clue: "모서리 너머에서 같은 발소리가 한 박자 늦게 따라옵니다. 단어는 네 글자입니다." }
+    ]
+  },
+  {
     id: "boiler",
     title: "지하 보일러실",
     mood: "물방울 소리 사이로 배관이 숨을 쉬듯 부풀었다 꺼집니다.",
     puzzleTitle: "비상 전력 패널",
-    puzzlePrompt: "전력 패널이 네 글자 암호를 요구합니다. 열쇠와 퓨즈가 있어야 손잡이가 돌아갑니다.",
+    puzzlePrompt: "전력 패널이 네 글자 암호를 요구합니다. 열쇠, 퓨즈, 노란 출입카드가 있어야 손잡이가 돌아갑니다.",
     answer: "DARK",
     reward: "승강기 토큰",
-    requires: ["녹슨 열쇠", "퓨즈"],
+    requires: ["녹슨 열쇠", "퓨즈", "노란 출입카드"],
     hint: "배관의 첫 글자를 왼쪽에서 오른쪽으로 읽어보세요.",
     hell: {
       puzzleTitle: "엔트로피 안전밸브",
@@ -161,6 +190,7 @@ const startBtn = $("#startBtn");
 const resumeBtn = $("#resumeBtn");
 const soundBtn = $("#soundBtn");
 const statusDifficulty = $("#statusDifficulty");
+const statusAdrenaline = $("#statusAdrenaline");
 const timerEl = $("#timer");
 const progressText = $("#progressText");
 const roomList = $("#roomList");
@@ -189,6 +219,7 @@ const showRanksBtn = $("#showRanksBtn");
 const leaderboard = $("#leaderboard");
 const clearResultsBtn = $("#clearResultsBtn");
 const terrorFlash = $("#terrorFlash");
+const rewardToast = $("#rewardToast");
 
 function init() {
   renderDifficultyCards();
@@ -197,6 +228,7 @@ function init() {
   statusDifficulty.textContent = "-";
   progressText.textContent = `0/${rooms.length}`;
   timerEl.textContent = "--:--";
+  statusAdrenaline.textContent = "0%";
 }
 
 function activeRoom(room) {
@@ -235,9 +267,13 @@ function startGame(fromSave = null) {
     hintsUsed: 0,
     mistakes: 0,
     scares: 0,
+    adrenaline: 0,
+    adrenalinePeak: 0,
+    streak: 0,
     remainingSeconds: difficulty.timeLimit,
     startedAt: new Date().toISOString()
   };
+  normalizeState();
 
   selectedDifficulty = state.difficultyKey;
   document.body.classList.toggle("hell-mode", state.difficultyKey === "hell");
@@ -269,10 +305,15 @@ function startTimer() {
 function scheduleTerror() {
   window.clearTimeout(terrorTimer);
   if (!state) return;
-  const base = state.difficultyKey === "hell" ? 9000 : 16000;
+  const currentRoom = rooms[state.roomIndex];
+  const base = currentRoom?.id === "backrooms" ? 6200 : state.difficultyKey === "hell" ? 9000 : 16000;
   const delay = base + Math.random() * 12000;
   terrorTimer = window.setTimeout(() => {
-    if (state) triggerTerror(Math.random() > 0.55 ? "얼굴" : "정전");
+    if (state) {
+      const kind = rooms[state.roomIndex]?.id === "backrooms" ? "복도" : Math.random() > 0.55 ? "얼굴" : "정전";
+      triggerTerror(kind);
+      bumpAdrenaline(kind === "복도" ? 7 : 5);
+    }
     scheduleTerror();
   }, delay);
 }
@@ -280,8 +321,8 @@ function scheduleTerror() {
 function triggerTerror(kind) {
   if (!state) return;
   state.scares += 1;
-  terrorFlash.textContent = kind === "얼굴" ? "13" : "";
-  terrorFlash.className = `terror-flash show ${kind === "얼굴" ? "face" : "blackout"}`;
+  terrorFlash.textContent = kind === "얼굴" ? "13" : kind === "복도" ? "RUN" : "";
+  terrorFlash.className = `terror-flash show ${kind === "얼굴" ? "face" : kind === "복도" ? "corridor" : "blackout"}`;
   document.body.classList.add("shake");
   playStinger(kind);
   window.setTimeout(() => {
@@ -303,6 +344,8 @@ function renderStatus() {
   statusDifficulty.textContent = difficulties[state.difficultyKey].label;
   timerEl.textContent = formatTime(state.remainingSeconds);
   progressText.textContent = `${state.solvedRooms.length}/${rooms.length}`;
+  statusAdrenaline.textContent = `${Math.round(state.adrenaline || 0)}%`;
+  statusAdrenaline.classList.toggle("danger", (state.adrenaline || 0) >= 75);
   timerEl.classList.toggle("danger", state.remainingSeconds < 180);
 }
 
@@ -354,6 +397,8 @@ function renderRoom() {
   const baseRoom = rooms[state.roomIndex];
   const room = activeRoom(baseRoom);
   const done = state.solvedRooms.includes(baseRoom.id);
+  document.body.dataset.room = baseRoom.id;
+  document.body.classList.toggle("liminal-mode", baseRoom.id === "backrooms");
   roomNumber.textContent = `Room ${state.roomIndex + 1}`;
   roomTitle.textContent = room.title;
   roomMood.textContent = room.mood;
@@ -390,9 +435,13 @@ function collectClue(baseRoom, room, spot) {
   const found = state.foundClues[baseRoom.id] || [];
   if (!found.includes(spot.id)) {
     state.foundClues[baseRoom.id] = [...found, spot.id];
+    state.streak = (state.streak || 0) + 1;
     addJournal(`${room.title}: ${spot.label} 조사`);
     setFeedback(spot.clue, "success");
+    showReward(`단서 발견 +${state.streak}`, `긴장도 ${Math.min(100, Math.round((state.adrenaline || 0) + 9))}%`);
+    bumpAdrenaline(baseRoom.id === "backrooms" ? 12 : 9);
     playTick();
+    if (baseRoom.id === "backrooms" && Math.random() > 0.62) triggerTerror("복도");
     if (state.difficultyKey === "hell" && Math.random() > 0.5) triggerTerror("정전");
   } else {
     setFeedback(spot.clue, "");
@@ -449,11 +498,14 @@ function submitAnswer() {
 
 function solveRoom(baseRoom, room) {
   state.solvedRooms.push(baseRoom.id);
+  state.streak = (state.streak || 0) + 2;
   if (room.reward && room.reward !== "탈출" && !state.inventory.includes(room.reward)) {
     state.inventory.push(room.reward);
   }
   addJournal(`${room.title} 잠금 해제`);
   setFeedback(room.reward === "탈출" ? "격리문이 열렸습니다." : `${room.reward}을 획득했습니다.`, "success");
+  showReward(room.reward === "탈출" ? "탈출 성공" : `${room.reward} 획득`, `연속 행동 x${state.streak}`);
+  bumpAdrenaline(room.reward === "탈출" ? 18 : 16);
   playSolve();
 
   if (room.reward === "탈출") {
@@ -469,6 +521,7 @@ function useHint() {
   const room = activeRoom(rooms[state.roomIndex]);
   const difficulty = difficulties[state.difficultyKey];
   state.hintsUsed += 1;
+  state.streak = 0;
   state.remainingSeconds = Math.max(1, state.remainingSeconds - difficulty.hintPenalty);
   addJournal(`${room.title}: 힌트 사용`);
   setFeedback(`힌트: ${room.hint}`, "");
@@ -480,6 +533,8 @@ function useHint() {
 function penalizeMistake() {
   const difficulty = difficulties[state.difficultyKey];
   state.mistakes += 1;
+  state.streak = 0;
+  state.adrenaline = Math.max(0, (state.adrenaline || 0) - 12);
   state.remainingSeconds = Math.max(1, state.remainingSeconds - difficulty.mistakePenalty);
   playMistake();
   renderStatus();
@@ -493,7 +548,8 @@ function finishGame(escaped) {
   saveResult(result);
   localStorage.removeItem(SAVE_KEY);
   state = null;
-  document.body.classList.remove("hell-mode", "shake");
+  document.body.classList.remove("hell-mode", "shake", "liminal-mode");
+  delete document.body.dataset.room;
   gameView.classList.add("hidden");
   setupView.classList.add("hidden");
   resultsView.classList.remove("hidden");
@@ -509,8 +565,9 @@ function createResult(escaped) {
   const escapeBonus = escaped ? 1500 : 0;
   const hellBonus = escaped && state.difficultyKey === "hell" ? 2500 : 0;
   const timeBonus = escaped ? state.remainingSeconds * 2 : 0;
+  const adrenalineBonus = Math.round((state.adrenalinePeak || 0) * 8);
   const penalty = state.hintsUsed * 120 + state.mistakes * 80 + state.scares * 10;
-  const score = Math.max(0, roomBonus + escapeBonus + hellBonus + timeBonus - penalty);
+  const score = Math.max(0, roomBonus + escapeBonus + hellBonus + timeBonus + adrenalineBonus - penalty);
 
   return {
     id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
@@ -526,6 +583,7 @@ function createResult(escaped) {
     hintsUsed: state.hintsUsed,
     mistakes: state.mistakes,
     scares: state.scares,
+    adrenalinePeak: state.adrenalinePeak || 0,
     finishedAt: new Date().toISOString()
   };
 }
@@ -540,7 +598,7 @@ function renderResult(result) {
     ["점수", `${result.score}`],
     ["난이도", result.difficultyLabel],
     ["힌트", `${result.hintsUsed}회`],
-    ["오답", `${result.mistakes}회`]
+    ["긴장도", `${Math.round(result.adrenalinePeak || 0)}%`]
   ];
 
   resultStats.innerHTML = "";
@@ -610,6 +668,27 @@ function clearFeedback() {
 function setFeedback(message, type) {
   feedback.textContent = message;
   feedback.className = `feedback ${type || ""}`.trim();
+}
+
+function showReward(title, detail) {
+  rewardToast.innerHTML = `<strong>${title}</strong><span>${detail}</span>`;
+  rewardToast.classList.remove("show");
+  void rewardToast.offsetWidth;
+  rewardToast.classList.add("show");
+}
+
+function bumpAdrenaline(amount) {
+  if (!state) return;
+  state.adrenaline = Math.min(100, Math.max(0, (state.adrenaline || 0) + amount));
+  state.adrenalinePeak = Math.max(state.adrenalinePeak || 0, state.adrenaline);
+  renderStatus();
+}
+
+function normalizeState() {
+  if (!state) return;
+  state.adrenaline = Number.isFinite(state.adrenaline) ? state.adrenaline : 0;
+  state.adrenalinePeak = Number.isFinite(state.adrenalinePeak) ? state.adrenalinePeak : state.adrenaline;
+  state.streak = Number.isFinite(state.streak) ? state.streak : 0;
 }
 
 function saveGame() {
@@ -741,8 +820,8 @@ function playMistake() {
 }
 
 function playStinger(kind) {
-  tone(kind === "얼굴" ? 740 : 92, 0.18, 0.34, "sawtooth");
-  window.setTimeout(() => tone(47, 0.45, 0.22, "square"), 80);
+  tone(kind === "얼굴" ? 740 : kind === "복도" ? 512 : 92, 0.18, 0.34, "sawtooth");
+  window.setTimeout(() => tone(kind === "복도" ? 71 : 47, 0.45, 0.22, "square"), 80);
 }
 
 function getRoomSvg(roomId, difficultyKey) {
@@ -808,6 +887,37 @@ function getRoomSvg(roomId, difficultyKey) {
     `);
   }
 
+  if (roomId === "backrooms") {
+    return shell(`
+      <rect x="0" y="0" width="1000" height="560" fill="#171208"/>
+      <path class="liminal-wall" d="M90 70h820l-160 350H250z" fill="#b49a4d" opacity=".46"/>
+      <path class="liminal-ceiling" d="M90 70h820L720 0H280z" fill="#52441f" opacity=".82"/>
+      <path class="liminal-floor" d="M250 420h500l175 140H75z" fill="#6f5b2b" opacity=".72"/>
+      <g class="floor-grid" stroke="#241e11" stroke-width="4" opacity=".68">
+        <path d="M250 420L75 560M375 420L310 560M500 420v140M625 420l65 140M750 420l175 140"/>
+        <path d="M221 443h558M188 470h624M143 510h714"/>
+      </g>
+      <g class="wallpaper" opacity=".35" stroke="#3b3219" stroke-width="4">
+        <path d="M134 120c36-22 52-22 88 0s52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0 52 22 88 0"/>
+        <path d="M154 192c36-22 52-22 88 0s52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0"/>
+        <path d="M179 264c36-22 52-22 88 0s52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0 52 22 88 0"/>
+      </g>
+      <g class="liminal-lights">
+        <rect x="438" y="54" width="124" height="24" rx="12" fill="#fff4af"/>
+        <rect x="280" y="26" width="90" height="18" rx="9" fill="#ffe48d" opacity=".52"/>
+        <rect x="630" y="26" width="90" height="18" rx="9" fill="#ffe48d" opacity=".52"/>
+      </g>
+      <rect class="hallway-door" x="735" y="206" width="82" height="184" fill="#18130b" stroke="#7e6932" stroke-width="8"/>
+      <rect class="hallway-door" x="188" y="216" width="68" height="155" fill="#18130b" stroke="#7e6932" stroke-width="7" opacity=".7"/>
+      <rect class="exit-sign" x="598" y="112" width="116" height="42" rx="6" fill="#102819" stroke="#68d98d" stroke-width="4"/>
+      <text class="exit-word" x="621" y="143" fill="#95ffad" font-size="30" font-family="monospace">${hell ? "MOB_US" : "EX_T"}</text>
+      <path class="watcher" d="M508 251c32 0 55 34 55 91 0 44-18 72-55 97-37-25-55-53-55-97 0-57 23-91 55-91z" fill="#030303" opacity=".78"/>
+      <circle class="watcher-eye" cx="488" cy="319" r="6" fill="${tint}"/>
+      <circle class="watcher-eye" cx="528" cy="319" r="6" fill="${tint}"/>
+      <text x="294" y="365" fill="${hell ? "#f1eee8" : "#3d3218"}" font-size="32" font-family="monospace">${hell ? "one side" : "EXIT"}</text>
+    `);
+  }
+
   if (roomId === "boiler") {
     return shell(`
       <rect x="80" y="70" width="840" height="350" fill="#121413" stroke="#30352f" stroke-width="6"/>
@@ -866,7 +976,8 @@ clearSaveBtn.addEventListener("click", () => {
   window.clearTimeout(terrorTimer);
   localStorage.removeItem(SAVE_KEY);
   state = null;
-  document.body.classList.remove("hell-mode", "shake");
+  document.body.classList.remove("hell-mode", "shake", "liminal-mode");
+  delete document.body.dataset.room;
   gameView.classList.add("hidden");
   resultsView.classList.add("hidden");
   setupView.classList.remove("hidden");
@@ -874,6 +985,7 @@ clearSaveBtn.addEventListener("click", () => {
   statusDifficulty.textContent = "-";
   progressText.textContent = `0/${rooms.length}`;
   timerEl.textContent = "--:--";
+  statusAdrenaline.textContent = "0%";
 });
 playAgainBtn.addEventListener("click", () => {
   setupView.classList.remove("hidden");

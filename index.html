@@ -10,6 +10,7 @@
     <div class="noise" aria-hidden="true"></div>
     <div class="fog" aria-hidden="true"></div>
     <div id="terrorFlash" class="terror-flash" aria-hidden="true"></div>
+    <div id="rewardToast" class="reward-toast" aria-live="polite"></div>
 
     <main class="app-shell">
       <section class="topbar" aria-label="게임 상태">
@@ -28,7 +29,11 @@
           </div>
           <div class="status-card">
             <span>진행</span>
-            <strong id="progressText">0/4</strong>
+            <strong id="progressText">0/5</strong>
+          </div>
+          <div class="status-card adrenaline-card">
+            <span>긴장도</span>
+            <strong id="statusAdrenaline">0%</strong>
           </div>
         </div>
       </section>
@@ -37,7 +42,7 @@
         <div class="setup-copy">
           <p class="eyebrow">Case 13</p>
           <h2>문이 닫히기 전에 병동의 기록을 따라 탈출하세요.</h2>
-          <p>방마다 숨은 단서와 잠금 장치가 있습니다. 지옥 난이도에서는 단서가 대학 수준의 암호, 선형대수, 열역학, 추상대수 지식으로 바뀝니다.</p>
+          <p>방마다 숨은 단서와 잠금 장치가 있습니다. 중간에는 형광등이 깜빡이는 백룸식 무한 복도가 열리고, 지옥 난이도에서는 단서가 대학 수준의 암호, 선형대수, 열역학, 추상대수 지식으로 바뀝니다.</p>
         </div>
 
         <div class="control-panel">
