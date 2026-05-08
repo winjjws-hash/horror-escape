@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>폐병동 13호</title>
+    <title>백룸: 열쇠와 그림자</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -15,34 +15,34 @@
     <main class="app-shell">
       <section class="topbar" aria-label="게임 상태">
         <div>
-          <p class="eyebrow">Horror Escape</p>
-          <h1>폐병동 13호</h1>
+          <p class="eyebrow">Backrooms Survival</p>
+          <h1>백룸: 열쇠와 그림자</h1>
         </div>
         <div class="status-grid">
           <div class="status-card">
-            <span>난이도</span>
-            <strong id="statusDifficulty">-</strong>
+            <span>레벨</span>
+            <strong id="stageText">0/3</strong>
           </div>
           <div class="status-card">
             <span>남은 시간</span>
             <strong id="timer">--:--</strong>
           </div>
           <div class="status-card">
-            <span>진행</span>
-            <strong id="progressText">0/5</strong>
+            <span>열쇠</span>
+            <strong id="keyText">0/0</strong>
           </div>
-          <div class="status-card adrenaline-card">
-            <span>긴장도</span>
-            <strong id="statusAdrenaline">0%</strong>
+          <div class="status-card danger-card">
+            <span>위험도</span>
+            <strong id="dangerText">0%</strong>
           </div>
         </div>
       </section>
 
       <section id="setupView" class="setup-view" aria-label="게임 시작 설정">
         <div class="setup-copy">
-          <p class="eyebrow">Case 13</p>
-          <h2>문이 닫히기 전에 병동의 기록을 따라 탈출하세요.</h2>
-          <p>방마다 숨은 단서와 잠금 장치가 있습니다. 중간에는 형광등이 깜빡이는 백룸식 무한 복도가 열리고, 지옥 난이도에서는 단서가 대학 수준의 암호, 선형대수, 열역학, 추상대수 지식으로 바뀝니다.</p>
+          <p class="eyebrow">Level 0</p>
+          <h2>WASD로 움직이고, 열쇠를 모아 출구까지 살아서 가세요.</h2>
+          <p>목숨은 3개뿐입니다. 복도마다 움직이는 귀신이 순찰하고, 지옥 난이도에서는 저주 괴물이 시야를 좁히고 열쇠까지 빼앗습니다.</p>
         </div>
 
         <div class="control-panel">
@@ -56,69 +56,61 @@
 
           <div class="button-row">
             <button id="startBtn" class="primary-btn" type="button">새 게임 시작</button>
-            <button id="resumeBtn" class="ghost-btn" type="button">저장된 게임 이어하기</button>
             <button id="soundBtn" class="ghost-btn" type="button">공포음 켜기</button>
           </div>
         </div>
       </section>
 
-      <section id="gameView" class="game-view hidden" aria-label="방탈출 게임">
-        <aside class="side-panel" aria-label="방 목록과 기록">
-          <div class="room-list" id="roomList"></div>
-          <div class="inventory-box">
-            <div class="panel-heading">
-              <h2>소지품</h2>
-              <button id="clearSaveBtn" class="icon-btn" type="button" title="현재 저장 삭제" aria-label="현재 저장 삭제">
-                <span aria-hidden="true">x</span>
-              </button>
-            </div>
-            <div id="inventory" class="inventory"></div>
+      <section id="gameView" class="game-view hidden" aria-label="백룸 생존 게임">
+        <aside class="side-panel" aria-label="게임 정보">
+          <div class="panel-heading">
+            <h2 id="stageTitle">Level 0</h2>
+            <button id="restartBtn" class="small-btn" type="button">처음부터</button>
           </div>
-          <div class="journal-box">
-            <div class="panel-heading">
-              <h2>기록</h2>
-              <button id="hintBtn" class="small-btn" type="button">힌트</button>
-            </div>
-            <ul id="journal" class="journal"></ul>
+
+          <div class="mission-card">
+            <p class="eyebrow">Mission</p>
+            <p id="missionText">열쇠를 찾고 출구로 이동하세요.</p>
           </div>
+
+          <div class="meter-list">
+            <div>
+              <div class="meter-label">
+                <span>목숨</span>
+                <strong id="healthText">3/3</strong>
+              </div>
+              <div class="meter"><span id="healthBar"></span></div>
+            </div>
+            <div>
+              <div class="meter-label">
+                <span>공포</span>
+                <strong id="fearText">0%</strong>
+              </div>
+              <div class="meter fear"><span id="fearBar"></span></div>
+            </div>
+          </div>
+
+          <div class="controls-card">
+            <p class="eyebrow">Controls</p>
+            <div class="key-grid" aria-label="키보드 조작 안내">
+              <kbd>W</kbd>
+              <kbd>A</kbd>
+              <kbd>S</kbd>
+              <kbd>D</kbd>
+            </div>
+            <p>이동: WASD 또는 방향키</p>
+            <p>목표: 열쇠 전부 획득 후 녹색 출구 진입</p>
+          </div>
+
+          <ul id="eventLog" class="event-log" aria-label="이벤트 기록"></ul>
         </aside>
 
-        <section class="room-stage" aria-live="polite">
-          <div class="room-header">
-            <div>
-              <p id="roomNumber" class="eyebrow">Room</p>
-              <h2 id="roomTitle"></h2>
-            </div>
-            <p id="roomMood" class="room-mood"></p>
-          </div>
-
-          <div class="scene-frame">
-            <div id="sceneArt" class="scene-art" aria-label="현재 방 장면"></div>
-            <div class="vignette" aria-hidden="true"></div>
-            <div id="hotspots" class="hotspots"></div>
-          </div>
-
-          <div class="interaction-grid">
-            <section class="puzzle-panel">
-              <div class="panel-heading">
-                <h3 id="puzzleTitle"></h3>
-                <span id="puzzleState" class="pill">잠김</span>
-              </div>
-              <p id="puzzlePrompt"></p>
-              <div class="answer-row">
-                <input id="answerInput" type="text" autocomplete="off" placeholder="답 입력">
-                <button id="submitAnswerBtn" class="primary-btn" type="button">확인</button>
-              </div>
-              <p id="feedback" class="feedback" role="status"></p>
-            </section>
-
-            <section class="clue-panel">
-              <div class="panel-heading">
-                <h3>발견한 단서</h3>
-                <button id="resetRoomBtn" class="small-btn" type="button">방 다시 보기</button>
-              </div>
-              <div id="clues" class="clues"></div>
-            </section>
+        <section class="play-stage" aria-label="플레이 화면">
+          <canvas id="gameCanvas" width="1280" height="720" aria-label="백룸 지도"></canvas>
+          <div id="gameOverlay" class="game-overlay">
+            <p class="eyebrow">Ready</p>
+            <h2>키보드로 움직이세요</h2>
+            <p>귀신과 닿으면 목숨이 줄어듭니다. 지옥의 저주 괴물은 시야와 열쇠를 함께 빼앗습니다.</p>
           </div>
         </section>
       </section>
@@ -145,11 +137,11 @@
       </section>
 
       <footer class="site-footer">
-        <span>폐병동 13호</span>
+        <span>백룸: 열쇠와 그림자</span>
         <a href="https://github.com/winjjws-hash" target="_blank" rel="noreferrer">GitHub winjjws-hash</a>
       </footer>
     </main>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=20260507-hardmode"></script>
   </body>
 </html>

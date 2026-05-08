@@ -1,184 +1,154 @@
-const SAVE_KEY = "ward13-current-game-v2";
-const RESULTS_KEY = "ward13-results-v2";
+const RESULTS_KEY = "backrooms-survival-results-v1";
 
 const difficulties = {
   easy: {
     label: "쉬움",
-    timeLimit: 30 * 60,
-    hintPenalty: 20,
-    mistakePenalty: 10,
-    description: "30분. 단서가 선명하고 페널티가 낮습니다."
+    timeLimit: 210,
+    playerSpeed: 178,
+    ghostSpeed: 108,
+    hitFear: 14,
+    hitTimePenalty: 8,
+    fearRate: 7,
+    description: "입문용이지만 귀신이 확실히 추격합니다."
   },
   normal: {
     label: "보통",
-    timeLimit: 22 * 60,
-    hintPenalty: 45,
-    mistakePenalty: 25,
-    description: "22분. 표준 난이도의 공포 방탈출입니다."
+    timeLimit: 180,
+    playerSpeed: 172,
+    ghostSpeed: 130,
+    hitFear: 18,
+    hitTimePenalty: 10,
+    fearRate: 9,
+    description: "열쇠 동선과 귀신 순찰을 같이 봐야 합니다."
   },
   nightmare: {
     label: "악몽",
-    timeLimit: 15 * 60,
-    hintPenalty: 80,
-    mistakePenalty: 45,
-    description: "15분. 단서가 불친절하고 오답 비용이 큽니다."
+    timeLimit: 150,
+    playerSpeed: 166,
+    ghostSpeed: 154,
+    hitFear: 23,
+    hitTimePenalty: 13,
+    fearRate: 12,
+    description: "귀신이 오래 추격하고 시간이 빠듯합니다."
   },
   hell: {
     label: "지옥",
-    timeLimit: 13 * 60,
-    hintPenalty: 150,
-    mistakePenalty: 90,
-    description: "13분. 대학 수준의 수학/과학 지식 없이는 거의 풀 수 없습니다."
+    timeLimit: 120,
+    playerSpeed: 160,
+    ghostSpeed: 184,
+    hitFear: 30,
+    hitTimePenalty: 16,
+    fearRate: 17,
+    curse: true,
+    description: "저주 괴물이 시야를 줄이고 열쇠를 빼앗습니다."
   }
 };
 
-const rooms = [
+const stages = [
   {
-    id: "reception",
-    title: "접수실",
-    mood: "먼지가 쌓인 접수 창구 너머로 멈춘 시계가 같은 초를 계속 반복합니다.",
-    puzzleTitle: "야간 접수 금고",
-    puzzlePrompt: "금고에는 네 자리 숫자판이 있습니다. 접수실의 시간이 아직도 남아 있습니다.",
-    answer: "0315",
-    reward: "녹슨 열쇠",
-    hint: "벽시계의 시침과 분침을 그대로 읽어보세요.",
-    hell: {
-      puzzleTitle: "라마누잔 금고",
-      puzzlePrompt: "금고에는 '두 양의 정수 세제곱의 합으로 두 가지 방식 표현되는 가장 작은 수'를 넣으라고 적혀 있습니다.",
-      answer: "1729",
-      hint: "1^3 + 12^3 = 9^3 + 10^3 입니다.",
-      hotspots: [
-        { id: "taxi", label: "택시 영수증", x: 35, y: 64, clue: "영수증 번호는 지워졌지만 옆에는 1^3+12^3, 9^3+10^3이 남아 있습니다." },
-        { id: "hardy", label: "수학자 메모", x: 70, y: 22, clue: "메모에는 '가장 작은 택시 수는 죽은 환자의 방 번호보다 크다'라고 적혀 있습니다." },
-        { id: "safe-note", label: "금고 낙서", x: 84, y: 63, clue: "세제곱 합의 두 표현이 같은 수를 만든다고 합니다. 네 자리 숫자입니다." }
-      ]
-    },
-    hotspots: [
-      { id: "clock", label: "멈춘 벽시계", x: 69, y: 21, clue: "벽시계는 03:15에서 멈춰 있습니다. 초침은 유리 안쪽을 긁고 있습니다." },
-      { id: "desk", label: "접수대 장부", x: 34, y: 64, clue: "장부 마지막 줄에는 '13호는 새벽 세 시 이후 받지 말 것'이라고 적혀 있습니다." },
-      { id: "cabinet", label: "철제 서랍", x: 83, y: 63, clue: "서랍 안에는 금고 번호가 시간과 함께 묶인다는 메모가 있습니다." }
+    title: "Level 0: 노란 복도",
+    mission: "넓어진 노란 복도에서 열쇠 4개를 찾고 녹색 출구로 들어가세요.",
+    theme: "yellow",
+    player: { x: 76, y: 76 },
+    exit: { x: 1182, y: 632, w: 58, h: 58 },
+    keys: [
+      { x: 1138, y: 82 },
+      { x: 170, y: 642 },
+      { x: 604, y: 348 },
+      { x: 1036, y: 496 }
+    ],
+    ghosts: [
+      { x: 638, y: 114, patrol: [{ x: 638, y: 114 }, { x: 638, y: 632 }] },
+      { x: 310, y: 538, patrol: [{ x: 310, y: 538 }, { x: 1084, y: 538 }] },
+      { x: 1004, y: 264, patrol: [{ x: 1004, y: 264 }, { x: 208, y: 264 }, { x: 208, y: 620 }] }
+    ],
+    walls: [
+      { x: 0, y: 0, w: 1280, h: 26 },
+      { x: 0, y: 694, w: 1280, h: 26 },
+      { x: 0, y: 0, w: 26, h: 720 },
+      { x: 1254, y: 0, w: 26, h: 720 },
+      { x: 130, y: 118, w: 780, h: 24 },
+      { x: 130, y: 118, w: 24, h: 304 },
+      { x: 250, y: 224, w: 850, h: 24 },
+      { x: 1076, y: 224, w: 24, h: 318 },
+      { x: 112, y: 478, w: 590, h: 24 },
+      { x: 678, y: 360, w: 24, h: 142 },
+      { x: 820, y: 366, w: 286, h: 24 },
+      { x: 362, y: 594, w: 566, h: 24 }
     ]
   },
   {
-    id: "ward",
-    title: "13호 병실",
-    mood: "침대 네 개가 나란히 놓여 있고, 비어 있어야 할 커튼 하나가 천천히 흔들립니다.",
-    puzzleTitle: "침상 호출 장치",
-    puzzlePrompt: "호출 장치는 세 자리 순서를 요구합니다. 차트 색과 침상 번호를 맞춰야 합니다.",
-    answer: "241",
-    reward: "퓨즈",
-    hint: "빨간 표식, 흰 표식, 검은 표식을 차례로 읽으면 됩니다.",
-    hell: {
-      puzzleTitle: "고유값 호출 장치",
-      puzzlePrompt: "간호기록에는 행렬 A=[[2,1],[1,2]]가 있고, 장치는 A의 가장 큰 고유값을 영어로 요구합니다.",
-      answer: "THREE",
-      hint: "det(A-lambda I)=0을 풀면 고유값은 1과 3입니다.",
-      hotspots: [
-        { id: "matrix", label: "행렬 차트", x: 23, y: 34, clue: "차트에는 A=[[2,1],[1,2]]와 'largest eigenvalue'라는 문구가 적혀 있습니다." },
-        { id: "det", label: "혈액 묻은 계산", x: 51, y: 40, clue: "벽에는 (2-lambda)^2-1=0 이라는 식이 손톱으로 새겨져 있습니다." },
-        { id: "answer-rule", label: "호출 장치 규칙", x: 51, y: 68, clue: "장치는 숫자가 아니라 영어 대문자 단어만 받습니다." }
-      ]
-    },
-    hotspots: [
-      { id: "red-chart", label: "빨간 차트", x: 22, y: 34, clue: "빨간 표식 환자는 2번 침상에 배정되어 있습니다." },
-      { id: "white-chart", label: "흰 차트", x: 50, y: 39, clue: "흰 표식 환자는 4번 침상입니다. 기록지는 젖어 있지만 숫자는 선명합니다." },
-      { id: "black-chart", label: "검은 차트", x: 77, y: 35, clue: "검은 표식 환자는 1번 침상입니다. 이름 칸은 비어 있습니다." },
-      { id: "call-box", label: "호출 장치", x: 51, y: 68, clue: "장치 옆에는 '색의 순서: 빨강, 흰색, 검정'이라고 새겨져 있습니다." }
+    title: "Level 1: 전등이 꺼진 병동",
+    mission: "열쇠 5개를 모으세요. 병동 귀신은 가까워지면 더 오래 추격합니다.",
+    theme: "ward",
+    player: { x: 74, y: 638 },
+    exit: { x: 1150, y: 58, w: 64, h: 64 },
+    keys: [
+      { x: 124, y: 86 },
+      { x: 520, y: 104 },
+      { x: 270, y: 382 },
+      { x: 776, y: 610 },
+      { x: 1110, y: 424 }
+    ],
+    ghosts: [
+      { x: 502, y: 346, patrol: [{ x: 502, y: 346 }, { x: 1110, y: 346 }, { x: 1110, y: 604 }] },
+      { x: 820, y: 128, patrol: [{ x: 820, y: 128 }, { x: 180, y: 128 }, { x: 180, y: 616 }] },
+      { x: 344, y: 584, patrol: [{ x: 344, y: 584 }, { x: 344, y: 246 }] },
+      { x: 1038, y: 536, patrol: [{ x: 1038, y: 536 }, { x: 620, y: 536 }, { x: 620, y: 176 }] }
+    ],
+    walls: [
+      { x: 0, y: 0, w: 1280, h: 26 },
+      { x: 0, y: 694, w: 1280, h: 26 },
+      { x: 0, y: 0, w: 26, h: 720 },
+      { x: 1254, y: 0, w: 26, h: 720 },
+      { x: 124, y: 168, w: 260, h: 28 },
+      { x: 426, y: 74, w: 28, h: 290 },
+      { x: 562, y: 246, w: 430, h: 28 },
+      { x: 188, y: 430, w: 624, h: 28 },
+      { x: 812, y: 430, w: 28, h: 172 },
+      { x: 80, y: 302, w: 278, h: 28 },
+      { x: 1000, y: 148, w: 28, h: 300 },
+      { x: 540, y: 588, w: 348, h: 28 }
     ]
   },
   {
-    id: "backrooms",
-    title: "노란 무한 복도",
-    mood: "젖은 카펫 냄새와 형광등의 낮은 윙윙거림이 방향감각을 천천히 지웁니다.",
-    puzzleTitle: "레벨 13 출구 표식",
-    puzzlePrompt: "복도는 네 글자 출구 신호를 요구합니다. 같은 벽지가 반복되지만, 표식은 조금씩 달라집니다.",
-    answer: "EXIT",
-    reward: "노란 출입카드",
-    requires: ["퓨즈"],
-    hint: "깜빡이는 표지판과 카펫 얼룩, 출구 낙서를 한 단어로 합치세요.",
-    hell: {
-      puzzleTitle: "비유클리드 복도",
-      puzzlePrompt: "벽에는 '한쪽 면과 한쪽 경계만 가진 띠'를 영어로 쓰라고 표시됩니다.",
-      answer: "MOBIUS",
-      hint: "한 번 비튼 띠는 안과 밖의 구분이 사라집니다.",
-      hotspots: [
-        { id: "strip", label: "비틀린 안내도", x: 27, y: 38, clue: "안내도는 한 번 비틀려 붙은 띠처럼 이어져 있습니다. 시작점이 안쪽과 바깥쪽을 동시에 밟습니다." },
-        { id: "one-side", label: "벽지 공식", x: 55, y: 24, clue: "벽지에는 'one side, one boundary'라는 문장이 노란색으로 반복됩니다." },
-        { id: "humming-door", label: "윙윙대는 문", x: 77, y: 53, clue: "문 아래에는 MOB_US라는 글자가 번쩍입니다. 빠진 글자는 하나입니다." },
-        { id: "shadow-turn", label: "돌아선 그림자", x: 48, y: 71, clue: "그림자는 같은 복도를 한 바퀴 돌고도 반대편에 서 있습니다." }
-      ]
-    },
-    hotspots: [
-      { id: "exit-sign", label: "깜빡이는 표지판", x: 66, y: 22, clue: "표지판은 E와 X를 번갈아 보여줍니다. 불이 꺼질 때마다 복도가 한 칸 늘어납니다." },
-      { id: "carpet", label: "젖은 카펫", x: 31, y: 73, clue: "카펫 얼룩은 위에서 보면 I처럼 길게 이어져 있습니다." },
-      { id: "wall-note", label: "벽지 낙서", x: 45, y: 43, clue: "누군가 벽지 위에 'T만 찾으면 나간다'라고 긁어두었습니다." },
-      { id: "turn", label: "돌아가는 모서리", x: 82, y: 62, clue: "모서리 너머에서 같은 발소리가 한 박자 늦게 따라옵니다. 단어는 네 글자입니다." }
-    ]
-  },
-  {
-    id: "boiler",
-    title: "지하 보일러실",
-    mood: "물방울 소리 사이로 배관이 숨을 쉬듯 부풀었다 꺼집니다.",
-    puzzleTitle: "비상 전력 패널",
-    puzzlePrompt: "전력 패널이 네 글자 암호를 요구합니다. 열쇠, 퓨즈, 노란 출입카드가 있어야 손잡이가 돌아갑니다.",
-    answer: "DARK",
-    reward: "승강기 토큰",
-    requires: ["녹슨 열쇠", "퓨즈", "노란 출입카드"],
-    hint: "배관의 첫 글자를 왼쪽에서 오른쪽으로 읽어보세요.",
-    hell: {
-      puzzleTitle: "엔트로피 안전밸브",
-      puzzlePrompt: "패널에는 '가역 열전달 Q/T가 부르는 상태함수의 이름'을 영어로 쓰라고 표시됩니다.",
-      answer: "ENTROPY",
-      hint: "열역학에서 dS = delta Q_rev / T 입니다.",
-      hotspots: [
-        { id: "revheat", label: "열역학 노트", x: 20, y: 41, clue: "노트에는 dS = delta Q_rev / T 라고 적혀 있습니다." },
-        { id: "state", label: "상태함수 표", x: 45, y: 24, clue: "표에는 'path independent state function'이라는 문장이 보입니다." },
-        { id: "panel", label: "전력 패널", x: 54, y: 55, clue: "패널은 답을 영어 단어로 입력하라고 요구합니다." },
-        { id: "warning", label: "보일러 경고문", x: 82, y: 34, clue: "경고문에는 '무질서가 증가하면 문은 더 단단히 잠긴다'라고 적혀 있습니다." }
-      ]
-    },
-    hotspots: [
-      { id: "pipe-d", label: "D 배관", x: 18, y: 42, clue: "첫 번째 배관에는 D가 긁혀 있습니다." },
-      { id: "pipe-a", label: "A 배관", x: 37, y: 30, clue: "두 번째 배관의 녹 사이로 A가 보입니다." },
-      { id: "pipe-r", label: "R 배관", x: 61, y: 48, clue: "세 번째 배관 손잡이에는 R이 새겨져 있습니다." },
-      { id: "pipe-k", label: "K 배관", x: 82, y: 35, clue: "마지막 배관 밸브 아래에는 K가 적혀 있습니다." }
-    ]
-  },
-  {
-    id: "archive",
-    title: "기록보관실",
-    mood: "문서함이 벽처럼 쌓인 방 한가운데, 거울 하나가 당신보다 늦게 움직입니다.",
-    puzzleTitle: "최종 격리문",
-    puzzlePrompt: "격리문은 네 자리 출입 코드를 요구합니다. 기록과 거울은 같은 숫자를 다른 방식으로 말합니다.",
-    answer: "1313",
-    reward: "탈출",
-    requires: ["승강기 토큰"],
-    hint: "파일 번호와 거울의 반복된 숫자를 이어 보세요.",
-    hell: {
-      puzzleTitle: "갈루아 격리문",
-      puzzlePrompt: "문에는 '5차 일반방정식의 근호해 불가능성을 설명하는 군론의 이름'을 입력하라고 적혀 있습니다.",
-      answer: "GALOIS",
-      hint: "일반 5차방정식, 군론, 근호해 불가능성은 갈루아 이론의 대표적인 주제입니다.",
-      hotspots: [
-        { id: "quintic", label: "5차 방정식 파일", x: 27, y: 48, clue: "파일에는 'general quintic is not solvable by radicals'라고 쓰여 있습니다." },
-        { id: "group", label: "군론 색인", x: 61, y: 26, clue: "색인에는 field extension, normal subgroup, solvable group이 반복됩니다." },
-        { id: "mirror", label: "거울의 이름", x: 73, y: 36, clue: "거울에 G _ L O I S라는 글자가 번갈아 나타납니다. 빠진 글자는 하나입니다." },
-        { id: "door", label: "격리문", x: 51, y: 67, clue: "출입문 단말기는 영어 대문자 여섯 글자를 받습니다." }
-      ]
-    },
-    hotspots: [
-      { id: "file", label: "13호 파일", x: 27, y: 48, clue: "가장 오래된 파일에는 'WARD 13'이 두 번 찍혀 있습니다." },
-      { id: "mirror", label: "낡은 거울", x: 73, y: 36, clue: "거울에 입김을 불자 13:13이라는 숫자가 나타났다 사라집니다." },
-      { id: "door", label: "격리문", x: 51, y: 67, clue: "출입문 단말기는 네 자리 숫자만 받습니다. 아래에는 '반복되는 병동'이라고 쓰여 있습니다." }
+    title: "Level 2: 출구가 움직이는 방",
+    mission: "마지막 레벨입니다. 열쇠 6개를 모아 붉은 그림자와 저주 괴물을 피해 탈출하세요.",
+    theme: "red",
+    player: { x: 70, y: 74 },
+    exit: { x: 1164, y: 620, w: 64, h: 64 },
+    keys: [
+      { x: 500, y: 76 },
+      { x: 1110, y: 176 },
+      { x: 126, y: 312 },
+      { x: 492, y: 622 },
+      { x: 892, y: 460 },
+      { x: 1030, y: 602 }
+    ],
+    ghosts: [
+      { x: 532, y: 328, patrol: [{ x: 532, y: 328 }, { x: 1108, y: 328 }, { x: 1108, y: 94 }] },
+      { x: 238, y: 606, patrol: [{ x: 238, y: 606 }, { x: 238, y: 120 }, { x: 760, y: 120 }] },
+      { x: 842, y: 604, patrol: [{ x: 842, y: 604 }, { x: 118, y: 604 }] },
+      { x: 736, y: 184, patrol: [{ x: 736, y: 184 }, { x: 736, y: 528 }] },
+      { x: 1068, y: 472, cursed: true, patrol: [{ x: 1068, y: 472 }, { x: 484, y: 472 }, { x: 484, y: 252 }] }
+    ],
+    walls: [
+      { x: 0, y: 0, w: 1280, h: 26 },
+      { x: 0, y: 694, w: 1280, h: 26 },
+      { x: 0, y: 0, w: 26, h: 720 },
+      { x: 1254, y: 0, w: 26, h: 720 },
+      { x: 128, y: 118, w: 680, h: 28 },
+      { x: 128, y: 118, w: 28, h: 188 },
+      { x: 268, y: 252, w: 720, h: 28 },
+      { x: 960, y: 252, w: 28, h: 246 },
+      { x: 116, y: 406, w: 650, h: 28 },
+      { x: 738, y: 406, w: 28, h: 170 },
+      { x: 330, y: 568, w: 28, h: 126 },
+      { x: 840, y: 114, w: 28, h: 166 },
+      { x: 1038, y: 560, w: 28, h: 134 }
     ]
   }
 ];
-
-let selectedDifficulty = "normal";
-let state = null;
-let timerId = null;
-let audio = null;
-let terrorTimer = null;
 
 const $ = (selector) => document.querySelector(selector);
 const setupView = $("#setupView");
@@ -187,30 +157,23 @@ const resultsView = $("#resultsView");
 const difficultyList = $("#difficultyList");
 const playerNameInput = $("#playerName");
 const startBtn = $("#startBtn");
-const resumeBtn = $("#resumeBtn");
 const soundBtn = $("#soundBtn");
-const statusDifficulty = $("#statusDifficulty");
-const statusAdrenaline = $("#statusAdrenaline");
+const restartBtn = $("#restartBtn");
+const stageText = $("#stageText");
 const timerEl = $("#timer");
-const progressText = $("#progressText");
-const roomList = $("#roomList");
-const inventory = $("#inventory");
-const journal = $("#journal");
-const roomNumber = $("#roomNumber");
-const roomTitle = $("#roomTitle");
-const roomMood = $("#roomMood");
-const sceneArt = $("#sceneArt");
-const hotspots = $("#hotspots");
-const puzzleTitle = $("#puzzleTitle");
-const puzzlePrompt = $("#puzzlePrompt");
-const puzzleState = $("#puzzleState");
-const answerInput = $("#answerInput");
-const submitAnswerBtn = $("#submitAnswerBtn");
-const feedback = $("#feedback");
-const clues = $("#clues");
-const hintBtn = $("#hintBtn");
-const resetRoomBtn = $("#resetRoomBtn");
-const clearSaveBtn = $("#clearSaveBtn");
+const keyText = $("#keyText");
+const dangerText = $("#dangerText");
+const healthText = $("#healthText");
+const healthBar = $("#healthBar");
+const fearText = $("#fearText");
+const fearBar = $("#fearBar");
+const stageTitle = $("#stageTitle");
+const missionText = $("#missionText");
+const eventLog = $("#eventLog");
+const canvas = $("#gameCanvas");
+const ctx = canvas.getContext("2d");
+const overlay = $("#gameOverlay");
+const results = $("#resultsView");
 const resultTitle = $("#resultTitle");
 const resultSummary = $("#resultSummary");
 const resultStats = $("#resultStats");
@@ -221,21 +184,17 @@ const clearResultsBtn = $("#clearResultsBtn");
 const terrorFlash = $("#terrorFlash");
 const rewardToast = $("#rewardToast");
 
+let selectedDifficulty = "normal";
+let state = null;
+let audio = null;
+let rafId = null;
+let lastTime = 0;
+let keysDown = new Set();
+
 function init() {
   renderDifficultyCards();
   renderLeaderboard();
-  resumeBtn.disabled = !loadSave();
-  statusDifficulty.textContent = "-";
-  progressText.textContent = `0/${rooms.length}`;
-  timerEl.textContent = "--:--";
-  statusAdrenaline.textContent = "0%";
-}
-
-function activeRoom(room) {
-  if (state?.difficultyKey === "hell" && room.hell) {
-    return { ...room, ...room.hell, hotspots: room.hell.hotspots };
-  }
-  return room;
+  renderIdleStatus();
 }
 
 function renderDifficultyCards() {
@@ -253,354 +212,495 @@ function renderDifficultyCards() {
   });
 }
 
-function startGame(fromSave = null) {
-  const playerName = (playerNameInput.value || "익명 탐색자").trim().slice(0, 18);
+function startGame() {
   const difficulty = difficulties[selectedDifficulty];
-  state = fromSave || {
-    playerName,
+  state = {
+    playerName: (playerNameInput.value || "익명 탐색자").trim().slice(0, 18),
     difficultyKey: selectedDifficulty,
-    roomIndex: 0,
-    solvedRooms: [],
-    foundClues: {},
-    inventory: [],
-    journal: [],
-    hintsUsed: 0,
-    mistakes: 0,
-    scares: 0,
-    adrenaline: 0,
-    adrenalinePeak: 0,
-    streak: 0,
-    remainingSeconds: difficulty.timeLimit,
-    startedAt: new Date().toISOString()
+    stageIndex: 0,
+    timeLeft: difficulty.timeLimit,
+    maxLives: 3,
+    lives: 3,
+    health: 100,
+    fear: 0,
+    curseTimer: 0,
+    lostKeys: 0,
+    danger: 0,
+    keysCollected: 0,
+    totalKeys: 0,
+    score: 0,
+    hits: 0,
+    escaped: false,
+    startedAt: performance.now(),
+    invulnerable: 0,
+    messageTimer: 3,
+    log: []
   };
-  normalizeState();
-
-  selectedDifficulty = state.difficultyKey;
-  document.body.classList.toggle("hell-mode", state.difficultyKey === "hell");
   setupView.classList.add("hidden");
   resultsView.classList.add("hidden");
   gameView.classList.remove("hidden");
-  if (!fromSave) addJournal(`탐색 시작: ${state.playerName}`);
-  renderAll();
-  startTimer();
-  scheduleTerror();
-  saveGame();
+  window.setTimeout(() => gameView.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  overlay.classList.remove("hidden");
+  loadStage(0);
+  addLog("형광등이 켜졌습니다. 움직이세요.");
+  showReward("게임 시작", "WASD로 이동");
+  lastTime = performance.now();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
 }
 
-function startTimer() {
-  window.clearInterval(timerId);
-  timerId = window.setInterval(() => {
-    if (!state) return;
-    state.remainingSeconds -= 1;
-    if (state.remainingSeconds <= 0) {
-      state.remainingSeconds = 0;
-      finishGame(false);
+function loadStage(index) {
+  const stage = stages[index];
+  const difficulty = difficulties[state.difficultyKey];
+  state.stageIndex = index;
+  state.stage = structuredClone(stage);
+  state.player = { x: stage.player.x, y: stage.player.y, r: 13, speed: difficulty.playerSpeed };
+  state.stage.keys = state.stage.keys.map((key, keyIndex) => ({ ...key, r: 11, id: keyIndex, taken: false }));
+  if (difficulty.curse) {
+    state.stage.ghosts.push({
+      x: canvas.width - 160,
+      y: canvas.height - 160,
+      cursed: true,
+      patrol: [
+        { x: canvas.width - 160, y: canvas.height - 160 },
+        { x: canvas.width - 110, y: 110 },
+        { x: 110, y: canvas.height - 110 }
+      ]
+    });
+  }
+  state.stage.ghosts = state.stage.ghosts.map((ghost, ghostIndex) => ({
+    ...ghost,
+    r: ghost.cursed ? 19 : 15,
+    target: 0,
+    speed: difficulty.ghostSpeed + index * 16 + ghostIndex * 8 + (ghost.cursed ? 24 : 0),
+    pulse: Math.random() * Math.PI * 2
+  }));
+  state.keysCollected = 0;
+  state.totalKeys = state.stage.keys.length;
+  state.danger = Math.min(100, index * 16);
+  document.body.dataset.stage = state.stage.theme;
+  stageTitle.textContent = stage.title;
+  missionText.textContent = stage.mission;
+  overlay.querySelector("h2").textContent = stage.title;
+  overlay.querySelector("p:last-child").textContent = stage.mission;
+  overlay.classList.remove("hidden");
+  window.setTimeout(() => overlay.classList.add("hidden"), 1800);
+  updateHud();
+}
+
+function loop(now) {
+  if (!state) return;
+  const dt = Math.min(0.033, (now - lastTime) / 1000 || 0);
+  lastTime = now;
+  update(dt);
+  if (!state) return;
+  draw();
+  rafId = requestAnimationFrame(loop);
+}
+
+function update(dt) {
+  state.timeLeft = Math.max(0, state.timeLeft - dt);
+  state.invulnerable = Math.max(0, state.invulnerable - dt);
+  state.curseTimer = Math.max(0, state.curseTimer - dt);
+  state.messageTimer = Math.max(0, state.messageTimer - dt);
+  state.fear = Math.min(100, state.fear + calculateFearPressure() * dt);
+  state.danger = Math.min(100, state.danger + dt * (2 + state.stageIndex * 1.4));
+  movePlayer(dt);
+  moveGhosts(dt);
+  collectKeys();
+  checkExit();
+  if (state.timeLeft <= 0 || state.lives <= 0 || state.fear >= 100) {
+    finishGame(false);
+    return;
+  }
+  updateHud();
+}
+
+function movePlayer(dt) {
+  const input = getInputVector();
+  if (!input.x && !input.y) return;
+  const speed = state.player.speed * (state.fear > 78 ? 0.82 : 1);
+  const nextX = state.player.x + input.x * speed * dt;
+  const nextY = state.player.y + input.y * speed * dt;
+  moveCircleWithWalls(state.player, nextX, state.player.y);
+  moveCircleWithWalls(state.player, state.player.x, nextY);
+}
+
+function moveGhosts(dt) {
+  const difficulty = difficulties[state.difficultyKey];
+  state.stage.ghosts.forEach((ghost) => {
+    ghost.pulse += dt * 4;
+    const distanceToPlayer = distance(ghost, state.player);
+    let target = ghost.patrol[ghost.target];
+    let speed = ghost.speed;
+    if (distanceToPlayer < 230 + state.stageIndex * 38) {
+      target = state.player;
+      speed += 28 + state.danger * 0.32;
+    } else if (distance(ghost, target) < 10) {
+      ghost.target = (ghost.target + 1) % ghost.patrol.length;
+      target = ghost.patrol[ghost.target];
+    }
+
+    const angle = Math.atan2(target.y - ghost.y, target.x - ghost.x);
+    const nextX = ghost.x + Math.cos(angle) * speed * dt;
+    const nextY = ghost.y + Math.sin(angle) * speed * dt;
+    moveCircleWithWalls(ghost, nextX, ghost.y);
+    moveCircleWithWalls(ghost, ghost.x, nextY);
+
+    if (distance(ghost, state.player) < ghost.r + state.player.r + 2 && state.invulnerable <= 0) {
+      state.lives = Math.max(0, state.lives - 1);
+      state.health = (state.lives / state.maxLives) * 100;
+      state.fear = Math.min(100, state.fear + difficulty.hitFear);
+      state.timeLeft = Math.max(0, state.timeLeft - difficulty.hitTimePenalty);
+      state.hits += 1;
+      state.invulnerable = 1.35;
+      if (ghost.cursed && state.difficultyKey === "hell") {
+        cursePlayer();
+      }
+      addLog(`귀신에게 닿았습니다. 목숨 ${state.lives}/${state.maxLives}`);
+      triggerTerror("잡힘");
+      playStinger();
+    }
+  });
+}
+
+function collectKeys() {
+  state.stage.keys.forEach((key) => {
+    if (key.taken) return;
+    if (distance(key, state.player) < key.r + state.player.r + 6) {
+      key.taken = true;
+      state.keysCollected += 1;
+      state.score += 450 + state.stageIndex * 160;
+      state.fear = Math.max(0, state.fear - 8);
+      addLog(`열쇠 획득 ${state.keysCollected}/${state.totalKeys}`);
+      showReward("열쇠 획득", `${state.keysCollected}/${state.totalKeys}`);
+      playPickup();
+      if (state.keysCollected === state.totalKeys) {
+        addLog("출구 잠금이 풀렸습니다.");
+        showReward("출구 개방", "녹색 문으로 이동");
+      }
+    }
+  });
+}
+
+function cursePlayer() {
+  state.curseTimer = 8;
+  state.fear = Math.min(100, state.fear + 10);
+  const takenKey = [...state.stage.keys].reverse().find((key) => key.taken);
+  if (takenKey) {
+    const drop = findOpenKeyDrop();
+    takenKey.taken = false;
+    takenKey.x = drop.x;
+    takenKey.y = drop.y;
+    state.keysCollected = Math.max(0, state.keysCollected - 1);
+    state.lostKeys += 1;
+    addLog("저주 괴물이 열쇠 하나를 빼앗았습니다.");
+    showReward("저주 발동", "시야 감소 + 열쇠 분실");
+  } else {
+    addLog("저주 괴물이 시야를 어둡게 만들었습니다.");
+    showReward("저주 발동", "시야 감소");
+  }
+}
+
+function findOpenKeyDrop() {
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const point = {
+      x: clamp(state.player.x + 180 - Math.random() * 360, 70, canvas.width - 70),
+      y: clamp(state.player.y + 160 - Math.random() * 320, 70, canvas.height - 70),
+      r: 13
+    };
+    if (!state.stage.walls.some((wall) => circleRectCollision(point, wall))) return point;
+  }
+  return { x: 70, y: canvas.height - 70 };
+}
+
+function checkExit() {
+  const exit = state.stage.exit;
+  const insideExit =
+    state.player.x > exit.x &&
+    state.player.x < exit.x + exit.w &&
+    state.player.y > exit.y &&
+    state.player.y < exit.y + exit.h;
+  if (!insideExit || state.keysCollected < state.totalKeys) return;
+
+  state.score += 1200 + Math.round(state.timeLeft * 8);
+  if (state.stageIndex === stages.length - 1) {
+    finishGame(true);
+    return;
+  }
+  addLog("다음 레벨로 떨어졌습니다.");
+  triggerTerror("전환");
+  loadStage(state.stageIndex + 1);
+}
+
+function moveCircleWithWalls(entity, x, y) {
+  const oldX = entity.x;
+  const oldY = entity.y;
+  entity.x = clamp(x, entity.r + 2, canvas.width - entity.r - 2);
+  entity.y = clamp(y, entity.r + 2, canvas.height - entity.r - 2);
+  for (const wall of state.stage.walls) {
+    if (circleRectCollision(entity, wall)) {
+      entity.x = oldX;
+      entity.y = oldY;
       return;
     }
-    renderStatus();
-    saveGame();
-  }, 1000);
-}
-
-function scheduleTerror() {
-  window.clearTimeout(terrorTimer);
-  if (!state) return;
-  const currentRoom = rooms[state.roomIndex];
-  const base = currentRoom?.id === "backrooms" ? 6200 : state.difficultyKey === "hell" ? 9000 : 16000;
-  const delay = base + Math.random() * 12000;
-  terrorTimer = window.setTimeout(() => {
-    if (state) {
-      const kind = rooms[state.roomIndex]?.id === "backrooms" ? "복도" : Math.random() > 0.55 ? "얼굴" : "정전";
-      triggerTerror(kind);
-      bumpAdrenaline(kind === "복도" ? 7 : 5);
-    }
-    scheduleTerror();
-  }, delay);
-}
-
-function triggerTerror(kind) {
-  if (!state) return;
-  state.scares += 1;
-  terrorFlash.textContent = kind === "얼굴" ? "13" : kind === "복도" ? "RUN" : "";
-  terrorFlash.className = `terror-flash show ${kind === "얼굴" ? "face" : kind === "복도" ? "corridor" : "blackout"}`;
-  document.body.classList.add("shake");
-  playStinger(kind);
-  window.setTimeout(() => {
-    terrorFlash.className = "terror-flash";
-    document.body.classList.remove("shake");
-  }, 620);
-}
-
-function renderAll() {
-  renderStatus();
-  renderRoomList();
-  renderInventory();
-  renderJournal();
-  renderRoom();
-}
-
-function renderStatus() {
-  if (!state) return;
-  statusDifficulty.textContent = difficulties[state.difficultyKey].label;
-  timerEl.textContent = formatTime(state.remainingSeconds);
-  progressText.textContent = `${state.solvedRooms.length}/${rooms.length}`;
-  statusAdrenaline.textContent = `${Math.round(state.adrenaline || 0)}%`;
-  statusAdrenaline.classList.toggle("danger", (state.adrenaline || 0) >= 75);
-  timerEl.classList.toggle("danger", state.remainingSeconds < 180);
-}
-
-function renderRoomList() {
-  roomList.innerHTML = "";
-  rooms.forEach((room, index) => {
-    const unlocked = index <= state.solvedRooms.length;
-    const done = state.solvedRooms.includes(room.id);
-    const view = activeRoom(room);
-    const button = document.createElement("button");
-    button.type = "button";
-    button.disabled = !unlocked;
-    button.className = `room-tab ${index === state.roomIndex ? "active" : ""} ${done ? "done" : ""}`;
-    button.innerHTML = `<span>${index + 1}</span><strong>${view.title}<small>${done ? "해제됨" : unlocked ? "탐색 가능" : "잠김"}</small></strong><span>${done ? "완료" : ""}</span>`;
-    button.addEventListener("click", () => {
-      state.roomIndex = index;
-      clearFeedback();
-      renderAll();
-      saveGame();
-    });
-    roomList.appendChild(button);
-  });
-}
-
-function renderInventory() {
-  inventory.innerHTML = "";
-  if (state.inventory.length === 0) {
-    inventory.innerHTML = `<span class="item-chip">비어 있음</span>`;
-    return;
   }
-  state.inventory.forEach((item) => {
-    const chip = document.createElement("span");
-    chip.className = "item-chip";
-    chip.textContent = item;
-    inventory.appendChild(chip);
+}
+
+function getInputVector() {
+  let x = 0;
+  let y = 0;
+  if (keysDown.has("w") || keysDown.has("arrowup")) y -= 1;
+  if (keysDown.has("s") || keysDown.has("arrowdown")) y += 1;
+  if (keysDown.has("a") || keysDown.has("arrowleft")) x -= 1;
+  if (keysDown.has("d") || keysDown.has("arrowright")) x += 1;
+  const length = Math.hypot(x, y);
+  return length ? { x: x / length, y: y / length } : { x: 0, y: 0 };
+}
+
+function calculateFearPressure() {
+  const closest = Math.min(...state.stage.ghosts.map((ghost) => distance(ghost, state.player)));
+  const proximity = Math.max(0, 1 - closest / 270);
+  return difficulties[state.difficultyKey].fearRate * proximity + state.stageIndex * 0.9;
+}
+
+function updateHud() {
+  stageText.textContent = `${state.stageIndex + 1}/${stages.length}`;
+  timerEl.textContent = formatTime(Math.ceil(state.timeLeft));
+  keyText.textContent = `${state.keysCollected}/${state.totalKeys}`;
+  dangerText.textContent = `${Math.round(state.danger)}%`;
+  healthText.textContent = `${state.lives}/${state.maxLives}`;
+  fearText.textContent = `${Math.round(state.fear)}%`;
+  healthBar.style.width = `${state.health}%`;
+  fearBar.style.width = `${state.fear}%`;
+  dangerText.classList.toggle("danger", state.danger > 74);
+  timerEl.classList.toggle("danger", state.timeLeft < 30);
+}
+
+function renderIdleStatus() {
+  stageText.textContent = `0/${stages.length}`;
+  timerEl.textContent = "--:--";
+  keyText.textContent = "0/0";
+  dangerText.textContent = "0%";
+}
+
+function draw() {
+  const stage = state.stage;
+  drawBackground(stage.theme);
+  stage.walls.forEach(drawWall);
+  drawExit(stage.exit, state.keysCollected === state.totalKeys);
+  stage.keys.forEach((key) => {
+    if (!key.taken) drawKey(key);
   });
+  stage.ghosts.forEach(drawGhost);
+  drawPlayer();
+  drawLightMask();
+  drawMiniMessage();
 }
 
-function renderJournal() {
-  journal.innerHTML = "";
-  state.journal.slice(-12).reverse().forEach((entry) => {
-    const item = document.createElement("li");
-    item.textContent = entry;
-    journal.appendChild(item);
-  });
-}
-
-function renderRoom() {
-  const baseRoom = rooms[state.roomIndex];
-  const room = activeRoom(baseRoom);
-  const done = state.solvedRooms.includes(baseRoom.id);
-  document.body.dataset.room = baseRoom.id;
-  document.body.classList.toggle("liminal-mode", baseRoom.id === "backrooms");
-  roomNumber.textContent = `Room ${state.roomIndex + 1}`;
-  roomTitle.textContent = room.title;
-  roomMood.textContent = room.mood;
-  puzzleTitle.textContent = room.puzzleTitle;
-  puzzlePrompt.textContent = room.puzzlePrompt;
-  puzzleState.textContent = done ? "해제됨" : "잠김";
-  puzzleState.classList.toggle("open", done);
-  answerInput.disabled = done;
-  submitAnswerBtn.disabled = done;
-  answerInput.value = "";
-  sceneArt.innerHTML = getRoomSvg(baseRoom.id, state.difficultyKey);
-  renderHotspots(baseRoom, room);
-  renderClues(baseRoom, room);
-  clearFeedback();
-}
-
-function renderHotspots(baseRoom, room) {
-  hotspots.innerHTML = "";
-  const found = new Set(state.foundClues[baseRoom.id] || []);
-  room.hotspots.forEach((spot) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `hotspot ${found.has(spot.id) ? "found" : ""}`;
-    button.style.left = `${spot.x}%`;
-    button.style.top = `${spot.y}%`;
-    button.dataset.label = spot.label;
-    button.textContent = found.has(spot.id) ? "✓" : "?";
-    button.addEventListener("click", () => collectClue(baseRoom, room, spot));
-    hotspots.appendChild(button);
-  });
-}
-
-function collectClue(baseRoom, room, spot) {
-  const found = state.foundClues[baseRoom.id] || [];
-  if (!found.includes(spot.id)) {
-    state.foundClues[baseRoom.id] = [...found, spot.id];
-    state.streak = (state.streak || 0) + 1;
-    addJournal(`${room.title}: ${spot.label} 조사`);
-    setFeedback(spot.clue, "success");
-    showReward(`단서 발견 +${state.streak}`, `긴장도 ${Math.min(100, Math.round((state.adrenaline || 0) + 9))}%`);
-    bumpAdrenaline(baseRoom.id === "backrooms" ? 12 : 9);
-    playTick();
-    if (baseRoom.id === "backrooms" && Math.random() > 0.62) triggerTerror("복도");
-    if (state.difficultyKey === "hell" && Math.random() > 0.5) triggerTerror("정전");
+function drawBackground(theme) {
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  if (theme === "yellow") {
+    gradient.addColorStop(0, "#403516");
+    gradient.addColorStop(1, "#161006");
+  } else if (theme === "ward") {
+    gradient.addColorStop(0, "#111818");
+    gradient.addColorStop(1, "#050706");
   } else {
-    setFeedback(spot.clue, "");
+    gradient.addColorStop(0, "#1b090b");
+    gradient.addColorStop(1, "#050303");
   }
-  renderHotspots(baseRoom, room);
-  renderClues(baseRoom, room);
-  saveGame();
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+  ctx.globalAlpha = theme === "yellow" ? 0.17 : 0.11;
+  ctx.strokeStyle = theme === "yellow" ? "#d8bd64" : "#8da8bd";
+  ctx.lineWidth = 1;
+  for (let x = 0; x < canvas.width; x += 48) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x + Math.sin(performance.now() / 900 + x) * 6, canvas.height);
+    ctx.stroke();
+  }
+  for (let y = 0; y < canvas.height; y += 48) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
-function renderClues(baseRoom, room) {
-  clues.innerHTML = "";
-  const found = state.foundClues[baseRoom.id] || [];
-  if (found.length === 0) {
-    clues.innerHTML = `<div class="empty-state">아직 발견한 단서가 없습니다.</div>`;
-    return;
-  }
-  found.forEach((id) => {
-    const spot = room.hotspots.find((item) => item.id === id);
-    if (!spot) return;
-    const chip = document.createElement("div");
-    chip.className = "clue-chip";
-    chip.textContent = spot.clue;
-    clues.appendChild(chip);
-  });
+function drawWall(wall) {
+  ctx.fillStyle = "rgba(3, 4, 4, 0.86)";
+  ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
+  ctx.strokeStyle = "rgba(216, 155, 69, 0.18)";
+  ctx.strokeRect(wall.x + 0.5, wall.y + 0.5, wall.w - 1, wall.h - 1);
 }
 
-function submitAnswer() {
-  const baseRoom = rooms[state.roomIndex];
-  const room = activeRoom(baseRoom);
-  if (state.solvedRooms.includes(baseRoom.id)) return;
-
-  const missing = (room.requires || []).filter((item) => !state.inventory.includes(item));
-  if (missing.length > 0) {
-    penalizeMistake();
-    setFeedback(`아직 ${missing.join(", ")}이 필요합니다.`, "error");
-    return;
-  }
-
-  const guess = normalizeAnswer(answerInput.value);
-  if (!guess) {
-    setFeedback("잠금 장치에 입력할 답을 적어주세요.", "error");
-    return;
-  }
-
-  if (guess === normalizeAnswer(room.answer)) {
-    solveRoom(baseRoom, room);
-    return;
-  }
-
-  penalizeMistake();
-  setFeedback("잠금 장치가 낮게 울립니다. 답이 맞지 않습니다.", "error");
-  triggerTerror(state.difficultyKey === "hell" ? "얼굴" : "정전");
+function drawExit(exit, open) {
+  ctx.save();
+  ctx.fillStyle = open ? "rgba(83, 213, 116, 0.34)" : "rgba(108, 30, 38, 0.32)";
+  ctx.strokeStyle = open ? "#65d77c" : "#8d2732";
+  ctx.lineWidth = 4;
+  ctx.shadowColor = open ? "rgba(83, 213, 116, 0.7)" : "rgba(185, 31, 45, 0.42)";
+  ctx.shadowBlur = 18;
+  roundRect(exit.x, exit.y, exit.w, exit.h, 6);
+  ctx.fill();
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = open ? "#d7ffd8" : "#e7a3a8";
+  ctx.font = "bold 16px Segoe UI, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(open ? "EXIT" : "LOCK", exit.x + exit.w / 2, exit.y + exit.h / 2 + 5);
+  ctx.restore();
 }
 
-function solveRoom(baseRoom, room) {
-  state.solvedRooms.push(baseRoom.id);
-  state.streak = (state.streak || 0) + 2;
-  if (room.reward && room.reward !== "탈출" && !state.inventory.includes(room.reward)) {
-    state.inventory.push(room.reward);
-  }
-  addJournal(`${room.title} 잠금 해제`);
-  setFeedback(room.reward === "탈출" ? "격리문이 열렸습니다." : `${room.reward}을 획득했습니다.`, "success");
-  showReward(room.reward === "탈출" ? "탈출 성공" : `${room.reward} 획득`, `연속 행동 x${state.streak}`);
-  bumpAdrenaline(room.reward === "탈출" ? 18 : 16);
-  playSolve();
-
-  if (room.reward === "탈출") {
-    window.setTimeout(() => finishGame(true), 900);
-  } else {
-    state.roomIndex = Math.min(state.roomIndex + 1, rooms.length - 1);
-    window.setTimeout(() => renderAll(), 720);
-    saveGame();
-  }
+function drawKey(key) {
+  const pulse = 1 + Math.sin(performance.now() / 180) * 0.12;
+  ctx.save();
+  ctx.translate(key.x, key.y);
+  ctx.scale(pulse, pulse);
+  ctx.shadowColor = "rgba(255, 216, 91, 0.8)";
+  ctx.shadowBlur = 18;
+  ctx.strokeStyle = "#ffd85b";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.arc(-7, 0, 7, 0, Math.PI * 2);
+  ctx.moveTo(0, 0);
+  ctx.lineTo(18, 0);
+  ctx.moveTo(11, 0);
+  ctx.lineTo(11, 8);
+  ctx.moveTo(18, 0);
+  ctx.lineTo(18, 7);
+  ctx.stroke();
+  ctx.restore();
 }
 
-function useHint() {
-  const room = activeRoom(rooms[state.roomIndex]);
-  const difficulty = difficulties[state.difficultyKey];
-  state.hintsUsed += 1;
-  state.streak = 0;
-  state.remainingSeconds = Math.max(1, state.remainingSeconds - difficulty.hintPenalty);
-  addJournal(`${room.title}: 힌트 사용`);
-  setFeedback(`힌트: ${room.hint}`, "");
-  if (state.difficultyKey === "hell") triggerTerror("얼굴");
-  renderStatus();
-  saveGame();
+function drawGhost(ghost) {
+  ctx.save();
+  ctx.translate(ghost.x, ghost.y);
+  const breathe = 1 + Math.sin(ghost.pulse) * 0.08;
+  ctx.scale(breathe, breathe);
+  ctx.shadowColor = ghost.cursed ? "rgba(164, 83, 255, 0.62)" : "rgba(255, 255, 255, 0.28)";
+  ctx.shadowBlur = ghost.cursed ? 28 : 18;
+  ctx.fillStyle = ghost.cursed ? "rgba(22, 4, 34, 0.95)" : "rgba(4, 4, 4, 0.92)";
+  ctx.beginPath();
+  ctx.arc(0, -4, ghost.r + 5, Math.PI, 0);
+  ctx.lineTo(ghost.r + 5, ghost.r + 6);
+  ctx.quadraticCurveTo(ghost.r * 0.5, ghost.r, 0, ghost.r + 6);
+  ctx.quadraticCurveTo(-ghost.r * 0.5, ghost.r, -ghost.r - 5, ghost.r + 6);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = ghost.cursed ? "#b86cff" : state.stage.theme === "red" ? "#ff2a42" : "#d7172b";
+  ctx.beginPath();
+  ctx.arc(-6, -3, 2.8, 0, Math.PI * 2);
+  ctx.arc(6, -3, 2.8, 0, Math.PI * 2);
+  ctx.fill();
+  if (ghost.cursed) {
+    ctx.strokeStyle = "rgba(184, 108, 255, 0.82)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 2, ghost.r + 10, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
-function penalizeMistake() {
-  const difficulty = difficulties[state.difficultyKey];
-  state.mistakes += 1;
-  state.streak = 0;
-  state.adrenaline = Math.max(0, (state.adrenaline || 0) - 12);
-  state.remainingSeconds = Math.max(1, state.remainingSeconds - difficulty.mistakePenalty);
-  playMistake();
-  renderStatus();
-  saveGame();
+function drawPlayer() {
+  const flash = state.invulnerable > 0 && Math.floor(performance.now() / 80) % 2 === 0;
+  ctx.save();
+  ctx.translate(state.player.x, state.player.y);
+  ctx.shadowColor = "rgba(76, 166, 168, 0.7)";
+  ctx.shadowBlur = 16;
+  ctx.fillStyle = flash ? "rgba(255, 255, 255, 0.62)" : "#d7c4a3";
+  ctx.beginPath();
+  ctx.arc(0, 0, state.player.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#273234";
+  ctx.fillRect(-5, -3, 10, 12);
+  ctx.restore();
+}
+
+function drawLightMask() {
+  ctx.save();
+  const cursePenalty = state.curseTimer > 0 ? 68 : 0;
+  const radius = Math.max(58, 190 - state.fear * 0.6 - cursePenalty);
+  const gradient = ctx.createRadialGradient(state.player.x, state.player.y, 20, state.player.x, state.player.y, radius);
+  gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+  gradient.addColorStop(0.58, "rgba(0, 0, 0, 0.06)");
+  gradient.addColorStop(1, state.curseTimer > 0 ? "rgba(0, 0, 0, 0.92)" : "rgba(0, 0, 0, 0.78)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = state.curseTimer > 0 ? "rgba(20, 0, 34, 0.38)" : "rgba(0, 0, 0, 0.22)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.restore();
+}
+
+function drawMiniMessage() {
+  if (state.keysCollected === state.totalKeys) return;
+  ctx.save();
+  ctx.fillStyle = "rgba(0, 0, 0, 0.52)";
+  roundRect(24, 22, 300, 38, 7);
+  ctx.fill();
+  ctx.fillStyle = "#d7c4a3";
+  ctx.font = "bold 15px Segoe UI, sans-serif";
+  ctx.fillText("열쇠를 모두 모아야 출구가 열립니다.", 42, 47);
+  ctx.restore();
 }
 
 function finishGame(escaped) {
-  window.clearInterval(timerId);
-  window.clearTimeout(terrorTimer);
-  const result = createResult(escaped);
+  if (!state) return;
+  cancelAnimationFrame(rafId);
+  const result = makeResult(escaped);
   saveResult(result);
-  localStorage.removeItem(SAVE_KEY);
   state = null;
-  document.body.classList.remove("hell-mode", "shake", "liminal-mode");
-  delete document.body.dataset.room;
   gameView.classList.add("hidden");
   setupView.classList.add("hidden");
   resultsView.classList.remove("hidden");
+  document.body.removeAttribute("data-stage");
   renderResult(result);
   renderLeaderboard();
-  resumeBtn.disabled = true;
 }
 
-function createResult(escaped) {
+function makeResult(escaped) {
   const difficulty = difficulties[state.difficultyKey];
-  const timeUsed = difficulty.timeLimit - state.remainingSeconds;
-  const roomBonus = state.solvedRooms.length * 500;
-  const escapeBonus = escaped ? 1500 : 0;
-  const hellBonus = escaped && state.difficultyKey === "hell" ? 2500 : 0;
-  const timeBonus = escaped ? state.remainingSeconds * 2 : 0;
-  const adrenalineBonus = Math.round((state.adrenalinePeak || 0) * 8);
-  const penalty = state.hintsUsed * 120 + state.mistakes * 80 + state.scares * 10;
-  const score = Math.max(0, roomBonus + escapeBonus + hellBonus + timeBonus + adrenalineBonus - penalty);
-
+  const timeUsed = difficulty.timeLimit - state.timeLeft;
+  const survivalBonus = Math.round(state.lives * 520 + Math.max(0, 100 - state.fear) * 7);
+  const escapeBonus = escaped ? 3200 : 0;
+  const stageBonus = (state.stageIndex + (escaped ? 1 : 0)) * 900;
+  const score = Math.max(0, Math.round(state.score + survivalBonus + escapeBonus + stageBonus + state.timeLeft * 10 - state.hits * 180));
   return {
     id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
     playerName: state.playerName,
-    difficultyKey: state.difficultyKey,
     difficultyLabel: difficulty.label,
     escaped,
     score,
-    solvedRooms: state.solvedRooms.length,
-    totalRooms: rooms.length,
+    stage: escaped ? stages.length : state.stageIndex + 1,
     timeUsed,
-    remainingSeconds: state.remainingSeconds,
-    hintsUsed: state.hintsUsed,
-    mistakes: state.mistakes,
-    scares: state.scares,
-    adrenalinePeak: state.adrenalinePeak || 0,
+    lives: state.lives,
+    maxLives: state.maxLives,
+    health: state.health,
+    fear: state.fear,
+    hits: state.hits,
+    lostKeys: state.lostKeys,
     finishedAt: new Date().toISOString()
   };
 }
 
 function renderResult(result) {
-  resultTitle.textContent = result.escaped ? "탈출 성공" : "시간 초과";
+  resultTitle.textContent = result.escaped ? "백룸 탈출 성공" : "백룸에 삼켜짐";
   resultSummary.textContent = result.escaped
-    ? `${result.playerName}님은 ${formatTime(result.timeUsed)} 만에 폐병동을 빠져나왔습니다.`
-    : `${result.playerName}님은 ${result.solvedRooms}/${result.totalRooms}개의 방을 해제한 상태로 갇혔습니다.`;
+    ? `${result.playerName}님은 ${formatTime(result.timeUsed)} 만에 귀신을 피해 출구를 찾았습니다.`
+    : `${result.playerName}님은 Level ${result.stage}에서 길을 잃었습니다.`;
 
   const stats = [
-    ["점수", `${result.score}`],
+    ["점수", result.score],
     ["난이도", result.difficultyLabel],
-    ["힌트", `${result.hintsUsed}회`],
-    ["긴장도", `${Math.round(result.adrenalinePeak || 0)}%`]
+    ["목숨", `${result.lives}/${result.maxLives || 3}`],
+    ["공포", `${Math.round(result.fear)}%`]
   ];
-
   resultStats.innerHTML = "";
   stats.forEach(([label, value]) => {
     const card = document.createElement("div");
@@ -611,17 +711,12 @@ function renderResult(result) {
 }
 
 function renderLeaderboard() {
-  const results = loadResults();
-  if (results.length === 0) {
+  const saved = loadResults();
+  if (saved.length === 0) {
     leaderboard.innerHTML = `<div class="empty-state">아직 저장된 결과가 없습니다.</div>`;
     return;
   }
-
-  const rows = results
-    .slice()
-    .sort((a, b) => b.score - a.score || a.timeUsed - b.timeUsed)
-    .slice(0, 12);
-
+  const rows = saved.sort((a, b) => b.score - a.score).slice(0, 10);
   const table = document.createElement("table");
   table.className = "rank-table";
   table.innerHTML = `
@@ -630,44 +725,36 @@ function renderLeaderboard() {
         <th>순위</th>
         <th>탐색자</th>
         <th>결과</th>
-        <th>난이도</th>
+        <th>레벨</th>
         <th>시간</th>
         <th>점수</th>
-        <th>저장일</th>
       </tr>
     </thead>
     <tbody></tbody>
   `;
-
   const tbody = table.querySelector("tbody");
   rows.forEach((result, index) => {
     const row = document.createElement("tr");
-    [index + 1, result.playerName, result.escaped ? "성공" : "실패", result.difficultyLabel, formatTime(result.timeUsed), result.score, formatDate(result.finishedAt)].forEach((cell) => {
+    [index + 1, result.playerName, result.escaped ? "탈출" : "실패", `${result.stage}/${stages.length}`, formatTime(result.timeUsed), result.score].forEach((cell) => {
       const td = document.createElement("td");
       td.textContent = cell;
       row.appendChild(td);
     });
     tbody.appendChild(row);
   });
-
   leaderboard.innerHTML = "";
   leaderboard.appendChild(table);
 }
 
-function addJournal(message) {
-  if (!state) return;
-  const stamped = `${formatClock(new Date())} ${message}`;
-  if (state.journal[state.journal.length - 1] !== stamped) state.journal.push(stamped);
-}
-
-function clearFeedback() {
-  feedback.textContent = "";
-  feedback.className = "feedback";
-}
-
-function setFeedback(message, type) {
-  feedback.textContent = message;
-  feedback.className = `feedback ${type || ""}`.trim();
+function addLog(message) {
+  state.log.push(message);
+  state.log = state.log.slice(-6);
+  eventLog.innerHTML = "";
+  state.log.slice().reverse().forEach((entry) => {
+    const item = document.createElement("li");
+    item.textContent = entry;
+    eventLog.appendChild(item);
+  });
 }
 
 function showReward(title, detail) {
@@ -677,108 +764,32 @@ function showReward(title, detail) {
   rewardToast.classList.add("show");
 }
 
-function bumpAdrenaline(amount) {
-  if (!state) return;
-  state.adrenaline = Math.min(100, Math.max(0, (state.adrenaline || 0) + amount));
-  state.adrenalinePeak = Math.max(state.adrenalinePeak || 0, state.adrenaline);
-  renderStatus();
-}
-
-function normalizeState() {
-  if (!state) return;
-  state.adrenaline = Number.isFinite(state.adrenaline) ? state.adrenaline : 0;
-  state.adrenalinePeak = Number.isFinite(state.adrenalinePeak) ? state.adrenalinePeak : state.adrenaline;
-  state.streak = Number.isFinite(state.streak) ? state.streak : 0;
-}
-
-function saveGame() {
-  if (state) localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-}
-
-function loadSave() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveResult(result) {
-  const results = loadResults();
-  results.push(result);
-  localStorage.setItem(RESULTS_KEY, JSON.stringify(results.slice(-40)));
-}
-
-function loadResults() {
-  try {
-    const raw = localStorage.getItem(RESULTS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function normalizeAnswer(value) {
-  return value.trim().replace(/\s+/g, "").toUpperCase();
-}
-
-function formatTime(seconds) {
-  const safe = Math.max(0, seconds);
-  const minutes = Math.floor(safe / 60).toString().padStart(2, "0");
-  const rest = Math.floor(safe % 60).toString().padStart(2, "0");
-  return `${minutes}:${rest}`;
-}
-
-function formatClock(date) {
-  return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-}
-
-function formatDate(value) {
-  const date = new Date(value);
-  return `${date.getMonth() + 1}/${date.getDate()} ${formatClock(date)}`;
+function triggerTerror(label) {
+  terrorFlash.textContent = label === "잡힘" ? "RUN" : "";
+  terrorFlash.className = "terror-flash show corridor";
+  document.body.classList.add("shake");
+  window.setTimeout(() => {
+    terrorFlash.className = "terror-flash";
+    document.body.classList.remove("shake");
+  }, 620);
 }
 
 function ensureAudio() {
   if (audio) return audio;
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext) return null;
-  const ctx = new AudioContext();
-  const master = ctx.createGain();
-  master.gain.value = 0.18;
-  master.connect(ctx.destination);
-
-  const low = ctx.createOscillator();
-  const lowGain = ctx.createGain();
-  const lowFilter = ctx.createBiquadFilter();
+  const ctxAudio = new AudioContext();
+  const master = ctxAudio.createGain();
+  master.gain.value = 0.16;
+  master.connect(ctxAudio.destination);
+  const low = ctxAudio.createOscillator();
+  const lowGain = ctxAudio.createGain();
   low.type = "sawtooth";
-  low.frequency.value = 39;
-  lowGain.gain.value = 0.18;
-  lowFilter.type = "lowpass";
-  lowFilter.frequency.value = 170;
-  low.connect(lowFilter).connect(lowGain).connect(master);
+  low.frequency.value = 45;
+  lowGain.gain.value = 0.12;
+  low.connect(lowGain).connect(master);
   low.start();
-
-  const pulseGain = ctx.createGain();
-  pulseGain.gain.value = 0;
-  pulseGain.connect(master);
-  const beat = window.setInterval(() => {
-    if (!audio?.enabled) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(54, now);
-    osc.frequency.exponentialRampToValueAtTime(34, now + 0.18);
-    osc.connect(pulseGain);
-    pulseGain.gain.cancelScheduledValues(now);
-    pulseGain.gain.setValueAtTime(0, now);
-    pulseGain.gain.linearRampToValueAtTime(0.45, now + 0.015);
-    pulseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
-    osc.start(now);
-    osc.stop(now + 0.34);
-  }, 1180);
-
-  audio = { ctx, master, low, beat, enabled: true };
+  audio = { ctx: ctxAudio, master, low, enabled: true };
   return audio;
 }
 
@@ -786,11 +797,11 @@ function toggleSound() {
   const sound = ensureAudio();
   if (!sound) return;
   sound.enabled = !sound.enabled;
-  sound.master.gain.setTargetAtTime(sound.enabled ? 0.18 : 0.0001, sound.ctx.currentTime, 0.08);
+  sound.master.gain.setTargetAtTime(sound.enabled ? 0.16 : 0.0001, sound.ctx.currentTime, 0.08);
   soundBtn.textContent = sound.enabled ? "공포음 끄기" : "공포음 켜기";
 }
 
-function tone(freq, duration, gain = 0.2, type = "sine") {
+function tone(freq, duration, gain = 0.18, type = "sine") {
   const sound = audio?.enabled ? audio : null;
   if (!sound) return;
   const now = sound.ctx.currentTime;
@@ -803,196 +814,87 @@ function tone(freq, duration, gain = 0.2, type = "sine") {
   amp.gain.exponentialRampToValueAtTime(0.0001, now + duration);
   osc.connect(amp).connect(sound.master);
   osc.start(now);
-  osc.stop(now + duration + 0.03);
+  osc.stop(now + duration + 0.04);
 }
 
-function playTick() {
-  tone(880, 0.08, 0.08, "triangle");
+function playPickup() {
+  tone(740, 0.08, 0.1, "triangle");
+  window.setTimeout(() => tone(980, 0.1, 0.08, "triangle"), 80);
 }
 
-function playSolve() {
-  tone(220, 0.18, 0.12, "sine");
-  window.setTimeout(() => tone(330, 0.25, 0.1, "triangle"), 90);
+function playStinger() {
+  tone(68, 0.3, 0.22, "sawtooth");
+  window.setTimeout(() => tone(41, 0.42, 0.18, "square"), 80);
 }
 
-function playMistake() {
-  tone(61, 0.36, 0.26, "sawtooth");
+function saveResult(result) {
+  const saved = loadResults();
+  saved.push(result);
+  localStorage.setItem(RESULTS_KEY, JSON.stringify(saved.slice(-30)));
 }
 
-function playStinger(kind) {
-  tone(kind === "얼굴" ? 740 : kind === "복도" ? 512 : 92, 0.18, 0.34, "sawtooth");
-  window.setTimeout(() => tone(kind === "복도" ? 71 : 47, 0.45, 0.22, "square"), 80);
-}
-
-function getRoomSvg(roomId, difficultyKey) {
-  const hell = difficultyKey === "hell";
-  const tint = hell ? "#d20f2c" : "#b91f2d";
-  const glow = hell ? 0.44 : 0.24;
-  const shell = (content) => `
-    <svg class="room-svg ${hell ? "hell-svg" : ""}" viewBox="0 0 1000 560" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="wall" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stop-color="${hell ? "#22080d" : "#1b1d1b"}"/>
-          <stop offset="1" stop-color="#050606"/>
-        </linearGradient>
-        <radialGradient id="lamp" cx="50%" cy="10%" r="70%">
-          <stop offset="0" stop-color="rgba(255,230,170,.18)"/>
-          <stop offset=".45" stop-color="rgba(185,31,45,${glow})"/>
-          <stop offset="1" stop-color="rgba(0,0,0,.92)"/>
-        </radialGradient>
-        <filter id="smear"><feGaussianBlur stdDeviation="2.2"/></filter>
-      </defs>
-      <rect width="1000" height="560" fill="url(#wall)"/>
-      <rect width="1000" height="560" fill="url(#lamp)" opacity=".55"/>
-      <path d="M0 420h1000v140H0z" fill="#050606"/>
-      <path class="floor-wave" d="M0 422c120-38 234-31 338-10s188 18 306-5 226-13 356 23v130H0z" fill="#0c0d0d"/>
-      ${content}
-      <path class="blood-drip" d="M888 0v75c0 23-27 23-27 0V0zm-64 0v132c0 34-38 34-38 0V0zm-590 0v96c0 28-31 28-31 0V0z" fill="${tint}" opacity=".55"/>
-      <path d="M0 0h1000v560H0z" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="2"/>
-    </svg>`;
-
-  if (roomId === "reception") {
-    return shell(`
-      <rect x="70" y="90" width="860" height="320" fill="#121514" stroke="#303531" stroke-width="6"/>
-      <rect x="120" y="125" width="315" height="180" fill="#090b0b" stroke="#2b302d" stroke-width="5"/>
-      <rect x="565" y="115" width="250" height="230" fill="#0b0d0d" stroke="#2b302d" stroke-width="5"/>
-      <rect x="148" y="337" width="450" height="86" fill="#221c18" stroke="#4b4035" stroke-width="5"/>
-      <rect x="638" y="248" width="160" height="176" fill="#191c1b" stroke="#343a36" stroke-width="5"/>
-      <circle class="clock-hand" cx="692" cy="116" r="46" fill="#111" stroke="#b18b55" stroke-width="5"/>
-      <path class="clock-hand" d="M692 116v-28M692 116h35" stroke="#ddd2bd" stroke-width="6" stroke-linecap="round"/>
-      <rect x="780" y="310" width="90" height="104" fill="#121313" stroke="#4b4b45" stroke-width="5"/>
-      <path d="M150 265h230" stroke="${tint}" stroke-width="13" opacity=".75"/>
-      <text x="178" y="392" fill="${hell ? "#f1eee8" : "#6e5b38"}" font-size="34" font-family="monospace">${hell ? "1^3+12^3" : "03:15"}</text>
-      <path class="shadow-person" d="M590 190c40-18 78 5 82 74 2 37-10 86-36 112-39-31-64-124-46-186z" fill="#020202" opacity=".68"/>
-    `);
+function loadResults() {
+  try {
+    const raw = localStorage.getItem(RESULTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
   }
-
-  if (roomId === "ward") {
-    return shell(`
-      <rect x="90" y="70" width="820" height="345" fill="#151716" stroke="#2f3431" stroke-width="6"/>
-      <path d="M145 105v272M355 105v272M565 105v272M775 105v272" stroke="#252a27" stroke-width="5"/>
-      <g fill="#1f2321" stroke="#51564f" stroke-width="5">
-        <rect x="115" y="286" width="170" height="72" rx="7"/>
-        <rect x="325" y="286" width="170" height="72" rx="7"/>
-        <rect x="535" y="286" width="170" height="72" rx="7"/>
-        <rect x="745" y="286" width="170" height="72" rx="7"/>
-      </g>
-      <rect class="curtain" x="706" y="88" width="92" height="220" fill="#b8aca0" opacity=".5"/>
-      <text x="410" y="165" fill="${hell ? "#f1eee8" : "#3d4640"}" font-size="35" font-family="monospace">${hell ? "[[2,1],[1,2]]" : "2 4 1"}</text>
-      <rect x="452" y="373" width="96" height="54" fill="#111" stroke="#6e5b38" stroke-width="4"/>
-      <circle cx="480" cy="400" r="7" fill="#b91f2d"/>
-      <circle cx="501" cy="400" r="7" fill="#e4e0d8"/>
-      <circle cx="522" cy="400" r="7" fill="#0a0a0a" stroke="#777"/>
-      <path class="underbed" d="M735 350c54-10 95-3 126 20-51 11-96 11-135 1z" fill="#030303" opacity=".86"/>
-    `);
-  }
-
-  if (roomId === "backrooms") {
-    return shell(`
-      <rect x="0" y="0" width="1000" height="560" fill="#171208"/>
-      <path class="liminal-wall" d="M90 70h820l-160 350H250z" fill="#b49a4d" opacity=".46"/>
-      <path class="liminal-ceiling" d="M90 70h820L720 0H280z" fill="#52441f" opacity=".82"/>
-      <path class="liminal-floor" d="M250 420h500l175 140H75z" fill="#6f5b2b" opacity=".72"/>
-      <g class="floor-grid" stroke="#241e11" stroke-width="4" opacity=".68">
-        <path d="M250 420L75 560M375 420L310 560M500 420v140M625 420l65 140M750 420l175 140"/>
-        <path d="M221 443h558M188 470h624M143 510h714"/>
-      </g>
-      <g class="wallpaper" opacity=".35" stroke="#3b3219" stroke-width="4">
-        <path d="M134 120c36-22 52-22 88 0s52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0 52 22 88 0"/>
-        <path d="M154 192c36-22 52-22 88 0s52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0"/>
-        <path d="M179 264c36-22 52-22 88 0s52 22 88 0 52-22 88 0 52 22 88 0 52-22 88 0 52 22 88 0"/>
-      </g>
-      <g class="liminal-lights">
-        <rect x="438" y="54" width="124" height="24" rx="12" fill="#fff4af"/>
-        <rect x="280" y="26" width="90" height="18" rx="9" fill="#ffe48d" opacity=".52"/>
-        <rect x="630" y="26" width="90" height="18" rx="9" fill="#ffe48d" opacity=".52"/>
-      </g>
-      <rect class="hallway-door" x="735" y="206" width="82" height="184" fill="#18130b" stroke="#7e6932" stroke-width="8"/>
-      <rect class="hallway-door" x="188" y="216" width="68" height="155" fill="#18130b" stroke="#7e6932" stroke-width="7" opacity=".7"/>
-      <rect class="exit-sign" x="598" y="112" width="116" height="42" rx="6" fill="#102819" stroke="#68d98d" stroke-width="4"/>
-      <text class="exit-word" x="621" y="143" fill="#95ffad" font-size="30" font-family="monospace">${hell ? "MOB_US" : "EX_T"}</text>
-      <path class="watcher" d="M508 251c32 0 55 34 55 91 0 44-18 72-55 97-37-25-55-53-55-97 0-57 23-91 55-91z" fill="#030303" opacity=".78"/>
-      <circle class="watcher-eye" cx="488" cy="319" r="6" fill="${tint}"/>
-      <circle class="watcher-eye" cx="528" cy="319" r="6" fill="${tint}"/>
-      <text x="294" y="365" fill="${hell ? "#f1eee8" : "#3d3218"}" font-size="32" font-family="monospace">${hell ? "one side" : "EXIT"}</text>
-    `);
-  }
-
-  if (roomId === "boiler") {
-    return shell(`
-      <rect x="80" y="70" width="840" height="350" fill="#121413" stroke="#30352f" stroke-width="6"/>
-      <g fill="none" stroke-linecap="round">
-        <path class="pipe-breathe" d="M90 220h250c48 0 48-70 96-70h130c48 0 48 110 96 110h250" stroke="#5e6960" stroke-width="26"/>
-        <path d="M108 300h210c44 0 44 74 88 74h220c45 0 45-92 90-92h192" stroke="#38443d" stroke-width="20"/>
-        <path d="M170 130v290" stroke="#243028" stroke-width="24"/>
-        <path d="M820 105v315" stroke="#243028" stroke-width="24"/>
-      </g>
-      <rect x="420" y="190" width="170" height="155" fill="#101111" stroke="#77705e" stroke-width="6"/>
-      <rect x="450" y="220" width="110" height="45" fill="#050606" stroke="#302d26" stroke-width="4"/>
-      <text x="432" y="181" fill="${hell ? "#f1eee8" : "#d89b45"}" font-size="36" font-family="monospace">${hell ? "dS=dQ/T" : "DARK"}</text>
-      <circle class="warning-light" cx="475" cy="304" r="17" fill="${tint}"/>
-      <circle cx="535" cy="304" r="17" fill="#1a4126"/>
-      <path class="steam" d="M260 410c-28-68 42-85 9-152M650 414c-36-70 42-98 7-164" stroke="#cfc6ba" stroke-width="9" opacity=".22" fill="none"/>
-    `);
-  }
-
-  return shell(`
-    <rect x="80" y="65" width="840" height="365" fill="#131515" stroke="#303531" stroke-width="6"/>
-    <g fill="#1b1e1c" stroke="#444941" stroke-width="5">
-      <rect x="105" y="105" width="170" height="285"/>
-      <rect x="290" y="105" width="170" height="285"/>
-      <rect x="540" y="105" width="170" height="285"/>
-      <rect x="725" y="105" width="170" height="285"/>
-    </g>
-    <g stroke="#272b28" stroke-width="4">
-      <path d="M105 170h170M105 235h170M105 300h170M290 170h170M290 235h170M290 300h170M540 170h170M540 235h170M540 300h170M725 170h170M725 235h170M725 300h170"/>
-    </g>
-    <rect class="mirror" x="440" y="130" width="120" height="190" fill="#060707" stroke="#8e806b" stroke-width="7"/>
-    <path d="M500 138c24 42 24 124 0 176" stroke="#c7b8a2" stroke-width="4" opacity=".4" fill="none"/>
-    <rect x="421" y="363" width="158" height="63" fill="#111" stroke="#5a5142" stroke-width="5"/>
-    <text class="mirror-text" x="${hell ? "431" : "456"}" y="405" fill="${tint}" font-size="${hell ? "31" : "34"}" font-family="monospace">${hell ? "G_LOIS" : "13:13"}</text>
-    <path class="long-hand" d="M705 175c55 52 64 144 7 203" stroke="#050505" stroke-width="22" opacity=".72" fill="none"/>
-  `);
 }
+
+function circleRectCollision(circle, rect) {
+  const closestX = clamp(circle.x, rect.x, rect.x + rect.w);
+  const closestY = clamp(circle.y, rect.y, rect.y + rect.h);
+  return distance(circle, { x: closestX, y: closestY }) < circle.r;
+}
+
+function distance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function roundRect(x, y, w, h, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + w, y, x + w, y + h, radius);
+  ctx.arcTo(x + w, y + h, x, y + h, radius);
+  ctx.arcTo(x, y + h, x, y, radius);
+  ctx.arcTo(x, y, x + w, y, radius);
+  ctx.closePath();
+}
+
+function formatTime(seconds) {
+  const safe = Math.max(0, Math.floor(seconds));
+  const minutes = Math.floor(safe / 60).toString().padStart(2, "0");
+  const rest = (safe % 60).toString().padStart(2, "0");
+  return `${minutes}:${rest}`;
+}
+
+window.addEventListener("keydown", (event) => {
+  const key = event.key.toLowerCase();
+  if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
+    event.preventDefault();
+    keysDown.add(key);
+  }
+});
+
+window.addEventListener("keyup", (event) => {
+  keysDown.delete(event.key.toLowerCase());
+});
 
 startBtn.addEventListener("click", () => {
   if (audio?.ctx?.state === "suspended") audio.ctx.resume();
   startGame();
 });
-resumeBtn.addEventListener("click", () => {
-  const saved = loadSave();
-  if (saved) startGame(saved);
-});
 soundBtn.addEventListener("click", toggleSound);
-submitAnswerBtn.addEventListener("click", submitAnswer);
-answerInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") submitAnswer();
-});
-hintBtn.addEventListener("click", useHint);
-resetRoomBtn.addEventListener("click", () => renderRoom());
-clearSaveBtn.addEventListener("click", () => {
-  if (!state) return;
-  window.clearInterval(timerId);
-  window.clearTimeout(terrorTimer);
-  localStorage.removeItem(SAVE_KEY);
-  state = null;
-  document.body.classList.remove("hell-mode", "shake", "liminal-mode");
-  delete document.body.dataset.room;
-  gameView.classList.add("hidden");
-  resultsView.classList.add("hidden");
-  setupView.classList.remove("hidden");
-  resumeBtn.disabled = true;
-  statusDifficulty.textContent = "-";
-  progressText.textContent = `0/${rooms.length}`;
-  timerEl.textContent = "--:--";
-  statusAdrenaline.textContent = "0%";
-});
+restartBtn.addEventListener("click", startGame);
 playAgainBtn.addEventListener("click", () => {
+  results.classList.add("hidden");
   setupView.classList.remove("hidden");
-  resultsView.classList.add("hidden");
-  statusDifficulty.textContent = "-";
-  progressText.textContent = `0/${rooms.length}`;
-  timerEl.textContent = "--:--";
+  renderIdleStatus();
 });
 showRanksBtn.addEventListener("click", () => {
   document.querySelector(".leaderboard").scrollIntoView({ behavior: "smooth", block: "start" });
